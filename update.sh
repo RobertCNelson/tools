@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 check_root () {
 	if [[ ${UID} -ne 0 ]] ; then
