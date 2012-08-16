@@ -23,3 +23,7 @@ omapdrm kms userspace:
 	cd /boot/uboot/tools/
 	./omap/build_omapdrm.sh
 
+update boot files:
+	cd /boot/uboot/tools/
+	./omap/update_boot_files.sh
+
