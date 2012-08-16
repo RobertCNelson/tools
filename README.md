@@ -24,6 +24,14 @@ omapdrm kms userspace:
 	./omap/build_omapdrm.sh
 
 update boot files:
+------------------
 	cd /boot/uboot/tools/
 	./omap/update_boot_files.sh
+
+suspend testing:
+----------------
+	cd /boot/uboot/tools/
+	./omap/suspend_mount_debug.sh
+	./omap/suspend.sh
+
 
