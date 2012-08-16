@@ -10,11 +10,16 @@ update:
 Generic Tools:
 ==============
 
+lxde minimal desktop:
+---------------------
+	cd /boot/uboot/tools/
+	./ubuntu/minimal_lxde_desktop.sh
+
 TI/OMAP Tools:
 ==============
 
 omapdrm kms userspace:
 ---------------------
 	cd /boot/uboot/tools/
-	./build_omapdrm.sh
+	./omap/build_omapdrm.sh
 
