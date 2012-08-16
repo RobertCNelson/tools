@@ -1,15 +1,20 @@
-## tools ##
+tools
+=====
 small collection of scripts that end up on the ARM images...
 
-## update: ##
+update:
+=====
 	cd /boot/uboot/tools/
 	git pull
 
-## Generic Tools: ##
+Generic Tools:
+==============
 
-## TI/OMAP Tools: ##
+TI/OMAP Tools:
+==============
 
-Build/Install omapdrm/kms userspace GIT drivers:
+omapdrm kms userspace:
+---------------------
 	cd /boot/uboot/tools/
-	"./build_omapdrm.sh"
+	./build_omapdrm.sh
 
