@@ -14,6 +14,10 @@ else
 	update-initramfs -u -k $(uname -r)
 fi
 
+if [ -f /boot/vmlinuz-$(uname -r) ] ; then
+	cp -v /boot/vmlinuz-$(uname -r) /boot/uboot/zImage
+fi
+
 if [ -f /boot/initrd.img-$(uname -r) ] ; then
 	cp -v /boot/initrd.img-$(uname -r) /boot/uboot/initrd.img
 fi
