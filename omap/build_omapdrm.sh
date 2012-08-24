@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LIBDRM="2.4.38"
+LIBDRM="2.4.39"
 
 #package list from:
 #http://anonscm.debian.org/gitweb/?p=collab-maint/xf86-video-omap.git;a=blob;f=debian/control;hb=HEAD
