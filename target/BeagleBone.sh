@@ -9,7 +9,7 @@ fi
 #http://circuitco.com/support/index.php?title=BeagleBone#Revision_A6A_Image
 
 for eeprom in /sys/bus/i2c/devices/3-005*/eeprom ; do
-	PARTNUMBER=$(hexdump -e '8/1 "%c"' $eeprom -s 58 -n16)
+	PARTNUMBER=$(hexdump -e '8/1 "%c"' $eeprom -s 58 -n16 2>/dev/null)
 	case $PARTNUMBER in
 		"BB-BONE-LCD3-01.")
 				echo "Turning on backlight for LCD3 cape"
@@ -26,7 +26,9 @@ for eeprom in /sys/bus/i2c/devices/3-005*/eeprom ; do
 				echo tsl2550 0x39 > /sys/class/i2c-adapter/i2c-3/new_device
 				echo 1 > /sys/bus/i2c/devices/3-0039/operating_mode;;
 		*)
-				echo "unknown cape: $PARTNUMBER";;
+			if [ "x${PARTNUMBER}" != "x" ] ; then
+				echo "unknown cape: $PARTNUMBER"
+			fi;;
 	esac
 done
 
