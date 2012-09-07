@@ -1,5 +1,10 @@
 #!/bin/sh
 
+if ! id | grep -q root; then
+	echo "must be run as root"
+	exit
+fi
+
 #Stolen from: /usb/bin/cape.sh found in:
 #http://circuitco.com/support/index.php?title=BeagleBone#Revision_A6A_Image
 
