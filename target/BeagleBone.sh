@@ -27,7 +27,7 @@ for eeprom in /sys/bus/i2c/devices/3-005*/eeprom ; do
 				echo 1 > /sys/bus/i2c/devices/3-0039/operating_mode;;
 		"BB-BONE-DVID-01")
 			#Nothing needs to be done...
-			unset PARTNUMBER
+			unset PARTNUMBER;;
 		*)
 			if [ "x${PARTNUMBER}" != "x" ] ; then
 				echo "unknown cape: $PARTNUMBER"
