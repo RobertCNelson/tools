@@ -89,11 +89,19 @@ is_omap () {
 }
 
 omap_fatfs_boot_part () {
+	echo "-----------------------------"
+	echo "Warning: this script will flash your bootloader with:"
+	echo "MLO: [${MLO}]"
+	echo "u-boot.img: [${UBOOT}]"
+	echo "for: [${board}]"
+	echo ""
+	read -p "Are you 100% sure, on selecting [${board}] (y/n)? "
+	[ "${REPLY}" == "y" ] || exit
+	echo "-----------------------------"
 	if [ "${spl_name}" ] ; then
 		if [ -f ${TEMPDIR}/dl/${MLO} ] ; then
 			rm -f /boot/uboot/${spl_name} || true
 			cp -v ${TEMPDIR}/dl/${MLO} /boot/uboot/${spl_name}
-			echo "-----------------------------"
 			sync
 		fi
 	fi
@@ -102,10 +110,10 @@ omap_fatfs_boot_part () {
 		if [ -f ${TEMPDIR}/dl/${UBOOT} ] ; then
 			rm -f /boot/uboot/${boot_name} || true
 			cp -v ${TEMPDIR}/dl/${UBOOT} /boot/uboot/${boot_name}
-			echo "-----------------------------"
 			sync
 		fi
 	fi
+	echo "-----------------------------"
 	echo "Bootloader Updated"
 }
 
@@ -151,6 +159,22 @@ check_soc_sh () {
 		exit
 	fi
 }
+
+checkparm () {
+	if [ "$(echo $1|grep ^'\-')" ] ; then
+		echo "E: Need an argument"
+	fi
+}
+
+# parse commandline options
+while [ ! -z "$1" ] ; do
+	case $1 in
+	--use-beta-bootloader)
+		USE_BETA_BOOTLOADER=1
+		;;
+	esac
+	shift
+done
 
 check_soc_sh
 
