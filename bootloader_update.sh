@@ -8,6 +8,8 @@ fi
 MIRROR="http://rcn-ee.net/deb"
 BACKUP_MIRROR="http://rcn-ee.homeip.net:81/dl/mirrors/deb"
 
+TEMPDIR=$(mktemp -d)
+
 rcn_ee_down_use_mirror () {
 	echo "rcn-ee.net down, switching to slower backup mirror"
 	echo "-----------------------------"
