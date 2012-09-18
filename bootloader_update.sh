@@ -97,6 +97,7 @@ dd_to_drive () {
 }
 
 got_board () {
+	BOOTLOADER=${board}
 	case "${board}" in
 	PANDABOARD)
 		is_omap
