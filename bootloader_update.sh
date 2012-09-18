@@ -89,7 +89,24 @@ is_omap () {
 }
 
 omap_fatfs_boot_part () {
-	echo "not implemented"
+	if [ "${spl_name}" ] ; then
+		if [ -f ${TEMPDIR}/dl/${MLO} ] ; then
+			rm -f /boot/uboot/${spl_name} || true
+			cp -v ${TEMPDIR}/dl/${MLO} /boot/uboot/${spl_name}
+			echo "-----------------------------"
+			sync
+		fi
+	fi
+
+	if [ "${boot_name}" ] ; then
+		if [ -f ${TEMPDIR}/dl/${UBOOT} ] ; then
+			rm -f /boot/uboot/${boot_name} || true
+			cp -v ${TEMPDIR}/dl/${UBOOT} /boot/uboot/${boot_name}
+			echo "-----------------------------"
+			sync
+		fi
+	fi
+	echo "Bootloader Updated"
 }
 
 dd_to_drive () {
