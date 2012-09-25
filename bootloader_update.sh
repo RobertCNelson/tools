@@ -64,7 +64,7 @@ dl_bootloader () {
 	fi
 
 	if [ "${spl_name}" ] ; then
-		MLO=$(cat ${TEMPDIR}/dl/${bootlist} | grep "${ABI}:${BOOTLOADER}:SPL" | awk '{print $2}')
+		MLO=$(cat ${TEMPDIR}/dl/${bootlist} | grep "${ABI}:${board}:SPL" | awk '{print $2}')
 		wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MLO}
 		MLO=${MLO##*/}
 		echo "SPL Bootloader: ${MLO}"
@@ -73,7 +73,7 @@ dl_bootloader () {
 	fi
 
 	if [ "${boot_name}" ] ; then
-		UBOOT=$(cat ${TEMPDIR}/dl/${bootlist} | grep "${ABI}:${BOOTLOADER}:BOOT" | awk '{print $2}')
+		UBOOT=$(cat ${TEMPDIR}/dl/${bootlist} | grep "${ABI}:${board}:BOOT" | awk '{print $2}')
 		wget --directory-prefix=${TEMPDIR}/dl/ ${UBOOT}
 		UBOOT=${UBOOT##*/}
 		echo "UBOOT Bootloader: ${UBOOT}"
@@ -83,7 +83,6 @@ dl_bootloader () {
 }
 
 is_omap () {
-	bootloader_location="omap_fatfs_boot_part"
 	spl_name="MLO"
 	boot_name="u-boot.img"
 }
@@ -123,20 +122,11 @@ dd_to_drive () {
 
 got_board () {
 	BOOTLOADER=${board}
-	case "${board}" in
-	PANDABOARD)
-		is_omap
-		SYSTEM="beagle_bx"
-		;;
-	*)
-		echo "Sorry: ${board} not implemented can not update bootloader safely"
-		exit
-		;;
-	esac
-	dl_bootloader
 
 	case "${bootloader_location}" in
 	omap_fatfs_boot_part)
+		is_omap
+		dl_bootloader
 		omap_fatfs_boot_part
 		;;
 	dd_to_drive)
