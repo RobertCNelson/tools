@@ -58,6 +58,10 @@ git checkout origin/HEAD -b omap-build
 make
 sudo make install
 
+if [ ! -d /etc/X11/ ] ; then
+	sudo mkdir -p /etc/X11/ || true
+fi
+
 if [ -f /etc/X11/xorg.conf ] ; then
 	sudo mv /etc/X11/xorg.conf /etc/X11/xorg.conf.bak
 fi
