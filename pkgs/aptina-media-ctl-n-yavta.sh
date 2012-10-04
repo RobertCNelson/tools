@@ -1,13 +1,19 @@
 #!/bin/bash
 
-VERSION="origin/master"
+media-ctl-sha="origin/master"
+yavta-sha="origin/master"
 
 sudo apt-get update
 sudo apt-get -y install build-essential dh-autoreconf libudev-dev pkg-config
 
 if [ ! -f ${HOME}/git/aptina-tools/.git/config ] ; then
-	git clone git://github.com/RobertCNelson/BeagleBoard-xM.git ${HOME}/git/aptina-tools/
+	git clone git://github.com/RobertCNelson/BeagleBoard-xM.git ${HOME}/git/aptina-media-ctl/
 fi
+
+if [ ! -f ${HOME}/git/aptina-tools/.git/config ] ; then
+        git clone git://github.com/RobertCNelson/yavta.git ${HOME}/git/aptina-yavta/
+fi
+
 
 DPKG_ARCH=$(dpkg --print-architecture | grep arm)
 case "${DPKG_ARCH}" in
@@ -34,14 +40,14 @@ cleanup_generated_files () {
 	rm -rf src/Makefile.in || true
 }
 
-cd ${HOME}/git/aptina-tools/tools/media-ctl
+cd ${HOME}/git/aptina-media-ctl/tools/media-ctl
 cleanup_generated_files
 
 cd ${HOME}/git/aptina-tools/
 git checkout master -f
 git pull
-git branch media-ctl-build -D || true
-git checkout ${VERSION} -b media-ctl-build
+git branch ${media-ctl-sha}-build -D || true
+git checkout ${media-ctl-sha} -b ${media-ctl-sha}-build
 
 echo ""
 echo "Building media-ctl"
@@ -56,3 +62,17 @@ sudo make install
 make distclean &>/dev/null
 cleanup_generated_files
 
+cd ${HOME}/git/aptina-yavta/
+make clean &>/dev/null
+git checkout master -f
+git pull
+git branch ${yavta-sha}-build -D || true
+git checkout ${yavta-sha} -b ${yavta-sha}-build
+
+echo ""
+echo "Building yavta"
+echo ""
+
+make
+sudo install yavta /usr/sbin/
+make clean &>/dev/null
