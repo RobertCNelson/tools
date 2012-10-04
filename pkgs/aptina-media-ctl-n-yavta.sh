@@ -6,11 +6,11 @@ yavta_sha="origin/master"
 sudo apt-get update
 sudo apt-get -y install build-essential dh-autoreconf libudev-dev pkg-config
 
-if [ ! -f ${HOME}/git/aptina-tools/.git/config ] ; then
+if [ ! -f ${HOME}/git/aptina-media-ctl/.git/config ] ; then
 	git clone git://github.com/RobertCNelson/BeagleBoard-xM.git ${HOME}/git/aptina-media-ctl/
 fi
 
-if [ ! -f ${HOME}/git/aptina-tools/.git/config ] ; then
+if [ ! -f ${HOME}/git/aptina-yavta/.git/config ] ; then
         git clone git://github.com/RobertCNelson/yavta.git ${HOME}/git/aptina-yavta/
 fi
 
@@ -32,7 +32,7 @@ cleanup_generated_files () {
 	rm -rf config.h.in || true
 	rm -rf config/ || true
 	rm -rf configure || true
-	rm -rf rm -rf m4/libtool.m4 || true
+	rm -rf m4/libtool.m4 || true
 	rm -rf m4/ltoptions.m4 || true
 	rm -rf m4/ltsugar.m4 || true
 	rm -rf m4/ltversion.m4 || true
