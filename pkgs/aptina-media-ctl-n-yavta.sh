@@ -43,7 +43,7 @@ cleanup_generated_files () {
 cd ${HOME}/git/aptina-media-ctl/tools/media-ctl
 cleanup_generated_files
 
-cd ${HOME}/git/aptina-tools/
+cd ${HOME}/git/aptina-media-ctl/
 git checkout master -f
 git pull
 git branch ${media_ctl_sha}-build -D || true
@@ -53,7 +53,7 @@ echo ""
 echo "Building media-ctl"
 echo ""
 
-cd ./tools/media-ctl
+cd ${HOME}/git/aptina-media-ctl/tools/media-ctl
 
 autoreconf --install
 ./configure --prefix=/usr --libdir=/usr/lib/arm-linux-${gnu}
