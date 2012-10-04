@@ -1,7 +1,7 @@
 #!/bin/bash
 
-media-ctl-sha="origin/master"
-yavta-sha="origin/master"
+media_ctl_sha="origin/master"
+yavta_sha="origin/master"
 
 sudo apt-get update
 sudo apt-get -y install build-essential dh-autoreconf libudev-dev pkg-config
@@ -46,8 +46,8 @@ cleanup_generated_files
 cd ${HOME}/git/aptina-tools/
 git checkout master -f
 git pull
-git branch ${media-ctl-sha}-build -D || true
-git checkout ${media-ctl-sha} -b ${media-ctl-sha}-build
+git branch ${media_ctl_sha}-build -D || true
+git checkout ${media_ctl_sha} -b ${media_ctl_sha}-build
 
 echo ""
 echo "Building media-ctl"
@@ -66,8 +66,8 @@ cd ${HOME}/git/aptina-yavta/
 make clean &>/dev/null
 git checkout master -f
 git pull
-git branch ${yavta-sha}-build -D || true
-git checkout ${yavta-sha} -b ${yavta-sha}-build
+git branch ${yavta_sha}-build -D || true
+git checkout ${yavta_sha} -b ${yavta_sha}-build
 
 echo ""
 echo "Building yavta"
