@@ -6,12 +6,12 @@ yavta_sha="origin/master"
 sudo apt-get update
 sudo apt-get -y install build-essential dh-autoreconf libudev-dev pkg-config
 
-if [ ! -f ${HOME}/git/media-ctl/.git/config ] ; then
-	git clone git://github.com/RobertCNelson/media-ctl.git ${HOME}/git/media-ctl/
+if [ ! -f ${HOME}/git/aptina-media-ctl/.git/config ] ; then
+	git clone git://github.com/RobertCNelson/BeagleBoard-xM.git ${HOME}/git/aptina-media-ctl/
 fi
 
-if [ ! -f ${HOME}/git/yavta/.git/config ] ; then
-	git clone git://github.com/RobertCNelson/yavta.git ${HOME}/git/yavta/
+if [ ! -f ${HOME}/git/aptina-yavta/.git/config ] ; then
+        git clone git://github.com/RobertCNelson/yavta.git ${HOME}/git/aptina-yavta/
 fi
 
 
@@ -40,9 +40,10 @@ cleanup_generated_files () {
 	rm -rf src/Makefile.in || true
 }
 
-cd ${HOME}/git/media-ctl/
+cd ${HOME}/git/aptina-media-ctl/tools/media-ctl
 cleanup_generated_files
 
+cd ${HOME}/git/aptina-media-ctl/
 git checkout master -f
 git pull
 git branch ${media_ctl_sha}-build -D || true
@@ -52,6 +53,8 @@ echo ""
 echo "Building media-ctl"
 echo ""
 
+cd ${HOME}/git/aptina-media-ctl/tools/media-ctl
+
 autoreconf --install
 ./configure --prefix=/usr --libdir=/usr/lib/arm-linux-${gnu}
 make
@@ -59,7 +62,7 @@ sudo make install
 make distclean &>/dev/null
 cleanup_generated_files
 
-cd ${HOME}/git/yavta/
+cd ${HOME}/git/aptina-yavta/
 make clean &>/dev/null
 git checkout master -f
 git pull
@@ -73,4 +76,3 @@ echo ""
 make
 sudo install yavta /usr/sbin/
 make clean &>/dev/null
-
