@@ -2,8 +2,11 @@
 
 echo "Aptina test capture using yavta/convert dumping image to /var/www"
 
-sudo apt-get update
-sudo apt-get -y install imagemagick
+if [ ! $(which convert) ] ; then
+	echo "Missing imagemagick"
+	sudo apt-get update
+	sudo apt-get -y install imagemagick
+fi
 
 camera="mt9p031 2-0048"
 
