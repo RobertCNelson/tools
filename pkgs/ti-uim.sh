@@ -24,7 +24,11 @@ make clean
 if [ -f /lib/firmware/ti-connectivity/TIInit_7.6.15.bts ] ; then
 	sudo rm -rf /lib/firmware/ti-connectivity/TIInit_7.6.15.bts || true
 fi
-sudo wget --directory-prefix=/lib/firmware/ti-connectivity http://rcn-ee.net/firmware/ti/7.6.15_ble/WL1271L_BLE_Enabled_BTS_File/3M/TIInit_7.6.15.bts
+
+#http://rcn-ee.net/firmware/ti/7.6.15_ble/WL1271L_BLE_Enabled_BTS_File/3M/TIInit_7.6.15.bts
+#http://rcn-ee.net/firmware/ti/7.6.15_ble/WL1271L_BLE_Enabled_BTS_File/115K/TIInit_7.6.15.bts
+
+sudo wget --directory-prefix=/lib/firmware/ti-connectivity http://rcn-ee.net/firmware/ti/7.6.15_ble/WL1271L_BLE_Enabled_BTS_File/115K/TIInit_7.6.15.bts
 
 cat > /tmp/bluetooth.rules <<-__EOF__
 	ACTION=="add", SUBSYSTEM=="platform", ENV{MODALIAS}=="platform:kim", RUN+="/sbin/initctl emit enable-ti-bt"
