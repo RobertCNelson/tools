@@ -18,6 +18,11 @@ git branch ${imx_sha}-build -D || true
 git checkout ${imx_sha} -b ${imx_sha}-build
 
 make
-sudo cp sdma*.bin /lib/firmware/
+
+if [ ! -d /lib/firmware/sdma ] ; then
+	sudo mkdir -p /lib/firmware/sdma || true
+fi
+
+sudo cp sdma*.bin /lib/firmware/sdma
 make clean
 
