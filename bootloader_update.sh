@@ -131,7 +131,26 @@ dd_to_drive () {
 	[ "${REPLY}" == "y" ] || exit
 	echo "-----------------------------"
 
-	echo "not implemented"
+	if [ "x${dd_seek}" == "x" ] ; then
+		echo "dd_seek not found in /boot/uboot/SOC.sh halting"
+		echo "-----------------------------"
+		exit
+	fi
+
+	if [ "x${dd_bs}" == "x" ] ; then
+		echo "dd_bs not found in /boot/uboot/SOC.sh halting"
+		echo "-----------------------------"
+		exit
+	fi
+
+	if [ "${boot_name}" ] ; then
+		if [ -f ${TEMPDIR}/dl/${UBOOT} ] ; then
+			sudo dd if=${TEMPDIR}/dl/${UBOOT} of=/dev/mmcblk0 seek=${dd_seek} bs=${dd_bs}
+			sync
+		fi
+	fi
+	echo "-----------------------------"
+	echo "Bootloader Updated"
 }
 
 got_board () {
