@@ -116,7 +116,21 @@ omap_fatfs_boot_part () {
 	echo "Bootloader Updated"
 }
 
+is_imx () {
+	unset spl_name
+	boot_name="u-boot.imx"
+}
+
 dd_to_drive () {
+	echo "-----------------------------"
+	echo "Warning: this script will flash your bootloader with:"
+	echo "u-boot.imx: [${UBOOT}]"
+	echo "for: [${board}]"
+	echo ""
+	read -p "Are you 100% sure, on selecting [${board}] (y/n)? "
+	[ "${REPLY}" == "y" ] || exit
+	echo "-----------------------------"
+
 	echo "not implemented"
 }
 
@@ -130,6 +144,8 @@ got_board () {
 		omap_fatfs_boot_part
 		;;
 	dd_to_drive)
+		is_imx
+		dl_bootloader
 		dd_to_drive
 		;;
 	esac
