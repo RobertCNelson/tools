@@ -20,6 +20,14 @@ lxde minimal desktop:
 	cd /boot/uboot/tools/
 	./ubuntu/minimal_lxde_desktop.sh
 
+Packages:
+==============
+
+omapconf (TI OMAP4+): https://github.com/omapconf/omapconf
+---------------------
+	cd /boot/uboot/tools/pkgs/
+	./ti-omapconf.sh
+
 TI/OMAP Tools:
 ==============
 
