@@ -55,9 +55,9 @@ sudo make install
 make distclean &>/dev/null
 cleanup_generated_files
 
-git_sha_yavta="origin/master"
-project_yavta="yavta"
-server_yavta="git://github.com/RobertCNelson"
+git_sha="origin/master"
+project="yavta"
+server="git://github.com/RobertCNelson"
 
 if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
 	git clone ${server}/${project}.git ${HOME}/git/${project}/
