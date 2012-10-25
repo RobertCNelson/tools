@@ -80,12 +80,21 @@ git checkout ${git_sha} -b ${git_sha}-build
 make
 sudo make install
 
-#if [ ! -d /etc/X11/ ] ; then
-#	sudo mkdir -p /etc/X11/ || true
-#fi
+if [ ! -d /etc/X11/ ] ; then
+	sudo mkdir -p /etc/X11/ || true
+fi
 
-#if [ -f /etc/X11/xorg.conf ] ; then
-#	sudo mv /etc/X11/xorg.conf /etc/X11/xorg.conf.bak
-#fi
-#sudo cp /boot/uboot/tools/omap/omapdrm_xorg.conf /etc/X11/xorg.conf
+if [ -f /etc/X11/xorg.conf ] ; then
+	sudo rm -rf /etc/X11/xorg.conf.bak || true
+	sudo mv /etc/X11/xorg.conf /etc/X11/xorg.conf.bak
+fi
 
+cat > /tmp/xorg.conf <<-__EOF__
+	Section "Device"
+	        Identifier      "omap"
+	        Driver          "omap"
+	EndSection
+
+__EOF__
+
+sudo cp -v /tmp/xorg.conf /etc/X11/xorg.conf
