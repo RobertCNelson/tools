@@ -21,7 +21,7 @@ server="git://anongit.freedesktop.org/mesa/drm"
 system=$(lsb_release -sd | awk '{print $1}')
 
 if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
-	git clone ${server}/${project}.git ${HOME}/git/${project}/ || true
+	git clone ${server} ${HOME}/git/${project}/ || true
 fi
 
 if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
