@@ -23,6 +23,11 @@ lxde minimal desktop:
 Packages:
 ==============
 
+omapdrm kms userspace:
+---------------------
+	cd /boot/uboot/tools/pkgs/
+	./ti-omapdrm.sh
+
 omapconf (TI OMAP4+): https://github.com/omapconf/omapconf
 ---------------------
 	cd /boot/uboot/tools/pkgs/
@@ -40,11 +45,6 @@ sdma-firmware (imx sdma firmware): http://git.pengutronix.de/?p=imx/sdma-firmwar
 
 TI/OMAP Tools:
 ==============
-
-omapdrm kms userspace:
----------------------
-	cd /boot/uboot/tools/
-	./omap/build_omapdrm.sh
 
 suspend testing:
 ----------------
