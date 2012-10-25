@@ -29,17 +29,17 @@ sudo cp sdma*.bin /lib/firmware/sdma
 make clean
 
 if [ ! -f /boot/initrd.img-$(uname -r) ] ; then
-	update-initramfs -c -k $(uname -r)
+	sudo update-initramfs -c -k $(uname -r)
 else
-	update-initramfs -u -k $(uname -r)
+	sudo update-initramfs -u -k $(uname -r)
 fi
 
 if [ -f /boot/vmlinuz-$(uname -r) ] ; then
-	cp -v /boot/vmlinuz-$(uname -r) /boot/uboot/zImage
+	sudo cp -v /boot/vmlinuz-$(uname -r) /boot/uboot/zImage
 fi
 
 if [ -f /boot/initrd.img-$(uname -r) ] ; then
-	cp -v /boot/initrd.img-$(uname -r) /boot/uboot/initrd.img
+	sudo cp -v /boot/initrd.img-$(uname -r) /boot/uboot/initrd.img
 fi
 
 echo "sdma firmware installed"
