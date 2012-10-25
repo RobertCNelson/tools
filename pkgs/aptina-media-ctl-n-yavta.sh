@@ -7,16 +7,6 @@ echo "Installing: ${deb_pkgs}dh-autoreconf libudev-dev pkg-config"
 sudo apt-get update
 sudo apt-get -y install ${deb_pkgs}dh-autoreconf libudev-dev pkg-config
 
-DPKG_ARCH=$(dpkg --print-architecture | grep arm)
-case "${DPKG_ARCH}" in
-armel)
-	gnu="gnueabi"
-	;;
-armhf)
-	gnu="gnueabihf"
-	;;
-esac
-
 git_sha="origin/master"
 project="media-ctl"
 server="git://github.com/RobertCNelson"
@@ -59,7 +49,7 @@ echo "Building ${project}"
 echo ""
 
 autoreconf --install
-./configure --prefix=/usr --libdir=/usr/lib/arm-linux-${gnu}
+./configure --prefix=/usr --libdir=/usr/lib/`dpkg-architecture -qDEB_HOST_MULTIARCH 2>/dev/null`/
 make
 sudo make install
 make distclean &>/dev/null

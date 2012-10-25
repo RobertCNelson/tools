@@ -16,16 +16,6 @@ sudo apt-get -y install xutils-dev
 #need to review:
 sudo apt-get -y install debhelper libudev-dev x11proto-core-dev libxext-dev x11proto-fonts-dev x11proto-gl-dev x11proto-xf86dri-dev x11proto-xf86dri-dev xserver-xorg-dev
 
-DPKG_ARCH=$(dpkg --print-architecture | grep arm)
-case "${DPKG_ARCH}" in
-armel)
-	gnu="gnueabi"
-	;;
-armhf)
-	gnu="gnueabihf"
-	;;
-esac
-
 git_sha="2.4.39"
 project="libdrm"
 server="git://anongit.freedesktop.org/mesa/drm"
@@ -52,7 +42,7 @@ git pull || true
 git branch ${git_sha}-build -D || true
 git checkout ${git_sha} -b ${git_sha}-build
 
-./autogen.sh --prefix=/usr --libdir=/usr/lib/arm-linux-${gnu} \
+./autogen.sh --prefix=/usr --libdir=/usr/lib/`dpkg-architecture -qDEB_HOST_MULTIARCH 2>/dev/null`/ \
 --disable-libkms --disable-intel --disable-radeon --disable-nouveau \
 --enable-omap-experimental-api
 

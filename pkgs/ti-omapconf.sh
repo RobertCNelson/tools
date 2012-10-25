@@ -12,7 +12,6 @@ fi
 git_sha="origin/master"
 project="omapconf"
 server="git://github.com/omapconf"
-system=$(lsb_release -sd | awk '{print $1}')
 
 if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
 	git clone ${server}/${project}.git ${HOME}/git/${project}/

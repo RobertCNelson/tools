@@ -12,7 +12,6 @@ fi
 git_sha="origin/master"
 project="sdma-firmware"
 server="git://git.pengutronix.de/git/imx"
-system=$(lsb_release -sd | awk '{print $1}')
 
 if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
 	git clone ${server}/${project}.git ${HOME}/git/${project}/
