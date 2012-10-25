@@ -1,12 +1,18 @@
 #!/bin/bash
 
+unset deb_pkgs
+dpkg -l | grep build-essential >/dev/null || deb_pkgs+="build-essential "
+
+if [ "${deb_pkgs}" ] ; then
+	echo "Installing: ${deb_pkgs}"
+	sudo apt-get update
+	sudo apt-get -y install ${deb_pkgs}
+fi
+
 git_sha="origin/master"
 project="omapconf"
 server="git://github.com/omapconf"
 system=$(lsb_release -sd | awk '{print $1}')
-
-sudo apt-get update
-sudo apt-get -y install build-essential
 
 if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
 	git clone ${server}/${project}.git ${HOME}/git/${project}/

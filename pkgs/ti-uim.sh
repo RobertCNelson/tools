@@ -1,12 +1,16 @@
 #!/bin/bash
 
+unset deb_pkgs
+dpkg -l | grep build-essential >/dev/null || deb_pkgs+="build-essential "
+
+echo "Installing: ${deb_pkgs}bluetooth"
+sudo apt-get update
+sudo apt-get -y install ${deb_pkgs}bluetooth
+
 it_sha="origin/master"
 project="ti-uim"
 server="git://github.com/RobertCNelson"
 system=$(lsb_release -sd | awk '{print $1}')
-
-sudo apt-get update
-sudo apt-get -y install build-essential bluetooth
 
 if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
 	git clone ${server}/${project}.git ${HOME}/git/${project}/

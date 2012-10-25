@@ -3,7 +3,7 @@
 echo "Aptina test capture using yavta/convert dumping image to /var/www"
 
 if [ ! $(which convert) ] ; then
-	echo "Missing imagemagick"
+	echo "Installing: imagemagick"
 	sudo apt-get update
 	sudo apt-get -y install imagemagick
 fi
