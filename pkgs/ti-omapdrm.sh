@@ -21,7 +21,13 @@ server="git://anongit.freedesktop.org/mesa/drm"
 system=$(lsb_release -sd | awk '{print $1}')
 
 if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
-	git clone ${server}/${project}.git ${HOME}/git/${project}/
+	git clone ${server}/${project}.git ${HOME}/git/${project}/ || true
+fi
+
+if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
+	rm -rf ${HOME}/git/${project}/ || true
+	echo "error: git failure, try re-runing"
+	exit
 fi
 
 echo ""
@@ -32,7 +38,7 @@ cd ${HOME}/git/${project}/
 
 make distclean &> /dev/null
 git checkout master -f
-git pull
+git pull || true
 git branch ${git_sha}-build -D || true
 git checkout ${git_sha} -b ${git_sha}-build
 
@@ -50,7 +56,13 @@ server="git://anongit.freedesktop.org/xorg/driver"
 system=$(lsb_release -sd | awk '{print $1}')
 
 if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
-	git clone ${server}/${project}.git ${HOME}/git/${project}/
+	git clone ${server}/${project}.git ${HOME}/git/${project}/ || true
+fi
+
+if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
+	rm -rf ${HOME}/git/${project}/ || true
+	echo "error: git failure, try re-runing"
+	exit
 fi
 
 echo ""
@@ -61,7 +73,7 @@ cd ${HOME}/git/${project}/
 
 make distclean &> /dev/null
 git checkout master -f
-git pull
+git pull || true
 git branch ${git_sha}-build -D || true
 git checkout ${git_sha} -b ${git_sha}-build
 
