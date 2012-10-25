@@ -3,7 +3,18 @@
 #package list from:
 #http://anonscm.debian.org/gitweb/?p=collab-maint/xf86-video-omap.git;a=blob;f=debian/control;hb=HEAD
 sudo apt-get update
-sudo apt-get -y install debhelper dh-autoreconf libdrm-dev libudev-dev libxext-dev pkg-config x11proto-core-dev x11proto-fonts-dev x11proto-gl-dev x11proto-xf86dri-dev xutils-dev xserver-xorg-dev
+
+#libdrm Installs: (wheezy)
+#dh-autoreconf libpciaccess-dev libpciaccess0 libpthread-stubs0
+#libpthread-stubs0-dev libx11-dev libxau-dev libxcb1-dev libxdmcp-dev pkg-config
+#x11proto-core-dev x11proto-input-dev x11proto-kb-dev xorg-sgml-doctools xtrans-dev
+sudo apt-get -y build-dep libdrm
+
+#for: xf86-video-omap
+sudo apt-get -y install xutils-dev
+
+#need to review:
+sudo apt-get -y install debhelper libudev-dev x11proto-core-dev libxext-dev x11proto-fonts-dev x11proto-gl-dev x11proto-xf86dri-dev x11proto-xf86dri-dev xserver-xorg-dev
 
 DPKG_ARCH=$(dpkg --print-architecture | grep arm)
 case "${DPKG_ARCH}" in
@@ -18,7 +29,6 @@ esac
 git_sha="2.4.39"
 project="libdrm"
 server="git://anongit.freedesktop.org/mesa/drm"
-system=$(lsb_release -sd | awk '{print $1}')
 
 if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
 	git clone ${server} ${HOME}/git/${project}/ || true
@@ -53,7 +63,6 @@ make distclean &> /dev/null
 git_sha="origin/master"
 project="xf86-video-omap"
 server="git://anongit.freedesktop.org/xorg/driver"
-system=$(lsb_release -sd | awk '{print $1}')
 
 if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
 	git clone ${server}/${project}.git ${HOME}/git/${project}/ || true
