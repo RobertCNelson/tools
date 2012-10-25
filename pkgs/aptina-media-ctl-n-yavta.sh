@@ -3,6 +3,7 @@
 unset deb_pkgs
 dpkg -l | grep build-essential >/dev/null || deb_pkgs+="build-essential "
 
+echo "Installing: ${deb_pkgs}dh-autoreconf libudev-dev pkg-config"
 sudo apt-get update
 sudo apt-get -y install ${deb_pkgs}dh-autoreconf libudev-dev pkg-config
 
