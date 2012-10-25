@@ -14,8 +14,8 @@ armhf)
 esac
 
 git_sha="origin/master"
-project="omapconf"
-server="git://github.com/omapconf"
+project="media-ctl"
+server="git://github.com/RobertCNelson"
 
 if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
 	git clone ${server}/${project}.git ${HOME}/git/${project}/
@@ -56,8 +56,8 @@ make distclean &>/dev/null
 cleanup_generated_files
 
 git_sha_yavta="origin/master"
-project_yavta="omapconf"
-server_yavta="git://github.com/omapconf"
+project_yavta="yavta"
+server_yavta="git://github.com/RobertCNelson"
 
 if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
 	git clone ${server}/${project}.git ${HOME}/git/${project}/

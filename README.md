@@ -5,7 +5,7 @@ small collection of scripts that end up on the ARM images...
 update:
 =====
 	cd /boot/uboot/tools/
-	git pull
+	sudo ./update.sh
 
 Generic Tools:
 ==============
@@ -27,6 +27,16 @@ omapconf (TI OMAP4+): https://github.com/omapconf/omapconf
 ---------------------
 	cd /boot/uboot/tools/pkgs/
 	./ti-omapconf.sh
+
+uim (TI uim Bluetooth wl12xx):
+---------------------
+	cd /boot/uboot/tools/pkgs/
+	./ti-uim.sh
+
+sdma-firmware (imx sdma firmware): http://git.pengutronix.de/?p=imx/sdma-firmware.git;a=summary
+---------------------
+	cd /boot/uboot/tools/pkgs/
+	./imx-sdma-firmware.sh
 
 TI/OMAP Tools:
 ==============
