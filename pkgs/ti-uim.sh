@@ -1,21 +1,23 @@
 #!/bin/bash
 
-ti_uim_sha="origin/master"
+it_sha="origin/master"
+project="ti-uim"
+server="git://github.com/RobertCNelson"
 system=$(lsb_release -sd | awk '{print $1}')
 
 sudo apt-get update
 sudo apt-get -y install build-essential bluetooth
 
-if [ ! -f ${HOME}/git/ti-uim/.git/config ] ; then
-	git clone git://github.com/RobertCNelson/ti-uim.git ${HOME}/git/ti-uim/
+if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
+	git clone ${server}/${project}.git ${HOME}/git/${project}/
 fi
 
-cd ${HOME}/git/ti-uim/
+cd ${HOME}/git/${project}/
 
 git checkout master -f
 git pull
-git branch ${ti_uim_sha}-build -D || true
-git checkout ${ti_uim_sha} -b ${ti_uim_sha}-build
+git branch ${git_sha}-build -D || true
+git checkout ${git_sha} -b ${git_sha}-build
 
 make
 sudo make install
@@ -66,4 +68,3 @@ if [ "x${system}" == "xUbuntu" ] ; then
 	sudo mv /tmp/ti-uim.upstart /etc/init.d/ti-uim
 	sudo chmod +x /etc/init.d/ti-uim
 fi
-

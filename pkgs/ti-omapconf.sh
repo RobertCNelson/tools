@@ -2,12 +2,14 @@
 
 git_sha="origin/master"
 project="omapconf"
+server="git://github.com/omapconf"
+system=$(lsb_release -sd | awk '{print $1}')
 
 sudo apt-get update
 sudo apt-get -y install build-essential
 
 if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
-	git clone git://github.com/omapconf/${project}.git ${HOME}/git/${project}/
+	git clone ${server}/${project}.git ${HOME}/git/${project}/
 fi
 
 cd ${HOME}/git/${project}/

@@ -1,19 +1,7 @@
 #!/bin/bash
 
-media_ctl_sha="origin/master"
-yavta_sha="origin/master"
-
 sudo apt-get update
 sudo apt-get -y install build-essential dh-autoreconf libudev-dev pkg-config
-
-if [ ! -f ${HOME}/git/media-ctl/.git/config ] ; then
-	git clone git://github.com/RobertCNelson/media-ctl.git ${HOME}/git/media-ctl/
-fi
-
-if [ ! -f ${HOME}/git/yavta/.git/config ] ; then
-	git clone git://github.com/RobertCNelson/yavta.git ${HOME}/git/yavta/
-fi
-
 
 DPKG_ARCH=$(dpkg --print-architecture | grep arm)
 case "${DPKG_ARCH}" in
@@ -24,6 +12,14 @@ armhf)
 	gnu="gnueabihf"
 	;;
 esac
+
+git_sha="origin/master"
+project="omapconf"
+server="git://github.com/omapconf"
+
+if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
+	git clone ${server}/${project}.git ${HOME}/git/${project}/
+fi
 
 cleanup_generated_files () {
 	rm -rf Makefile.in || true
@@ -40,16 +36,16 @@ cleanup_generated_files () {
 	rm -rf src/Makefile.in || true
 }
 
-cd ${HOME}/git/media-ctl/
+cd ${HOME}/git/${project}/
 cleanup_generated_files
 
 git checkout master -f
 git pull
-git branch ${media_ctl_sha}-build -D || true
-git checkout ${media_ctl_sha} -b ${media_ctl_sha}-build
+git branch ${git_sha}-build -D || true
+git checkout ${git_sha} -b ${git_sha}-build
 
 echo ""
-echo "Building media-ctl"
+echo "Building ${project}"
 echo ""
 
 autoreconf --install
@@ -59,18 +55,25 @@ sudo make install
 make distclean &>/dev/null
 cleanup_generated_files
 
-cd ${HOME}/git/yavta/
-make clean &>/dev/null
+git_sha_yavta="origin/master"
+project_yavta="omapconf"
+server_yavta="git://github.com/omapconf"
+
+if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
+	git clone ${server}/${project}.git ${HOME}/git/${project}/
+fi
+
+cd ${HOME}/git/${project}/
+
 git checkout master -f
 git pull
-git branch ${yavta_sha}-build -D || true
-git checkout ${yavta_sha} -b ${yavta_sha}-build
+git branch ${git_sha}-build -D || true
+git checkout ${git_sha} -b ${git_sha}-build
 
 echo ""
-echo "Building yavta"
+echo "Building ${project}"
 echo ""
 
 make
 sudo install yavta /usr/sbin/
 make clean &>/dev/null
-

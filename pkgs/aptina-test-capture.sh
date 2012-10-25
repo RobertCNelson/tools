@@ -22,4 +22,3 @@ fi
 
 sudo yavta -f UYVY -s 1024x768 --capture=1 --file=/var/www/img.uyvy /dev/video6
 sudo convert -size 1024x768 /var/www/img.uyvy /var/www/img.jpg
-
