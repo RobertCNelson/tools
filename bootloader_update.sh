@@ -8,6 +8,8 @@ fi
 MIRROR="http://rcn-ee.net/deb"
 BACKUP_MIRROR="http://rcn-ee.homeip.net:81/dl/mirrors/deb"
 
+DRIVE="/boot/uboot"
+
 TEMPDIR=$(mktemp -d)
 
 rcn_ee_down_use_mirror () {
@@ -99,16 +101,16 @@ omap_fatfs_boot_part () {
 	echo "-----------------------------"
 	if [ "${spl_name}" ] ; then
 		if [ -f ${TEMPDIR}/dl/${MLO} ] ; then
-			rm -f /boot/uboot/${spl_name} || true
-			cp -v ${TEMPDIR}/dl/${MLO} /boot/uboot/${spl_name}
+			rm -f ${DRIVE}/${spl_name} || true
+			cp -v ${TEMPDIR}/dl/${MLO} ${DRIVE}/${spl_name}
 			sync
 		fi
 	fi
 
 	if [ "${boot_name}" ] ; then
 		if [ -f ${TEMPDIR}/dl/${UBOOT} ] ; then
-			rm -f /boot/uboot/${boot_name} || true
-			cp -v ${TEMPDIR}/dl/${UBOOT} /boot/uboot/${boot_name}
+			rm -f ${DRIVE}/${boot_name} || true
+			cp -v ${TEMPDIR}/dl/${UBOOT} ${DRIVE}/${boot_name}
 			sync
 		fi
 	fi
@@ -132,13 +134,13 @@ dd_to_drive () {
 	echo "-----------------------------"
 
 	if [ "x${dd_seek}" == "x" ] ; then
-		echo "dd_seek not found in /boot/uboot/SOC.sh halting"
+		echo "dd_seek not found in ${DRIVE}/SOC.sh halting"
 		echo "-----------------------------"
 		exit
 	fi
 
 	if [ "x${dd_bs}" == "x" ] ; then
-		echo "dd_bs not found in /boot/uboot/SOC.sh halting"
+		echo "dd_bs not found in ${DRIVE}/SOC.sh halting"
 		echo "-----------------------------"
 		exit
 	fi
@@ -171,18 +173,32 @@ got_board () {
 }
 
 check_soc_sh () {
-	if [ -f /boot/uboot/SOC.sh ] ; then
-		source /boot/uboot/SOC.sh
+	echo "Bootloader Recovery"
+	if [ $(uname -m) != "armv7l" ] ; then
+		echo "Warning, this is only half implemented to make it work on x86..."
+		echo "mount your mmc drive to /tmp/uboot/"
+		DRIVE="/tmp/uboot"
+	fi
+
+	if [ -f ${DRIVE}/SOC.sh ] ; then
+		source ${DRIVE}/SOC.sh
 		if [ "x${board}" != "x" ] ; then
 			got_board
 		else
-			echo "Sorry: board undefined in [/boot/uboot/SOC.sh] can not update bootloader safely"
+			echo "Sorry: board undefined in [${DRIVE}/SOC.sh] can not update bootloader safely"
 			exit
 		fi
 	else
-		echo "Sorry: unable to find [/boot/uboot/SOC.sh] can not update bootloader safely"
+		echo "Sorry: unable to find [${DRIVE}/SOC.sh] can not update bootloader safely"
 		exit
 	fi
+
+	if [ $(uname -m) != "armv7l" ] ; then
+		sync
+		sync
+		sudo umount ${DRIVE}/ || true
+	fi
+	echo "Bootloader Recovery Complete"
 }
 
 checkparm () {
