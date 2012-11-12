@@ -1,4 +1,11 @@
-#!/bin/bash
+#!/bin/bash -e
+
+network_down () {
+	echo "Network Down"
+	exit
+}
+
+ping -c1 www.google.com | grep ttl &> /dev/null || network_down
 
 #package list from:
 #http://anonscm.debian.org/gitweb/?p=collab-maint/xf86-video-omap.git;a=blob;f=debian/control;hb=HEAD

@@ -1,4 +1,11 @@
-#!/bin/bash
+#!/bin/bash -e
+
+network_down () {
+	echo "Network Down"
+	exit
+}
+
+ping -c1 www.google.com | grep ttl &> /dev/null || network_down
 
 echo "Aptina test capture using yavta/convert dumping image to /var/www"
 
