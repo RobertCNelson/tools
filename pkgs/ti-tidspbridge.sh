@@ -33,6 +33,7 @@ if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
 fi
 
 cd ${HOME}/git/${project}/
+make clean
 
 git checkout master -f
 git pull || true
@@ -58,6 +59,42 @@ if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
 fi
 
 cd ${HOME}/git/${project}/
+make clean
+
+git checkout master -f
+git pull || true
+git branch ${git_sha}-build -D || true
+git checkout ${git_sha} -b ${git_sha}-build
+
+make CROSS_COMPILE= 
+sudo make install
+
+git_sha="origin/master"
+project="dsp-tools"
+server="git://github.com/felipec"
+
+if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
+	git clone ${server}/${project}.git ${HOME}/git/${project}/
+fi
+
+if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
+	rm -rf ${HOME}/git/${project}/ || true
+	echo "error: git failure, try re-runing"
+	exit
+fi
+
+cd ${HOME}/git/${project}/
+make clean
+
+git checkout master -f
+git pull || true
+
+git branch -D firmware-tmp || true
+git checkout origin/firmware -b firmware-tmp
+sudo cp -v firmware/test.dll64P /lib/dsp/
+
+git checkout master -f
+git branch -D firmware-tmp || true
 
 git checkout master -f
 git pull || true
