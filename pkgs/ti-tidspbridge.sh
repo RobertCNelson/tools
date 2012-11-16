@@ -55,21 +55,24 @@ file_dsp_startup () {
 	### END INIT INFO
 
 	if [ ! -f /lib/dsp/baseimage.dof ] ; then
-		echo "tidspbridge: missing /lib/dsp/baseimage.dof"
-		exit 0
+	        echo "tidspbridge: missing /lib/dsp/baseimage.dof"
+	        exit 1
 	fi
 
+	unset driver
 	if [ -f /lib/modules/\$(uname -r)/kernel/drivers/staging/tidspbridge/bridgedriver.ko ] ; then
-		driver="bridgedriver"
+	        driver="bridgedriver"
 	fi
 
 	#v3.4.x
 	if [ -f /lib/modules/\$(uname -r)/kernel/drivers/staging/tidspbridge/tidspbridge.ko ] ; then
-		driver="tidspbridge"
+	        driver="tidspbridge"
 	fi
 
-	modprobe mailbox_mach
-	modprobe tidspbridge base_img=/lib/dsp/baseimage.dof
+	if [ "x\${driver}" == "x" ] ; then
+	        echo "tidspbridge: no tidspbridge module"
+	        exit 1
+	fi
 
 	case "\$1" in
 	start)
