@@ -33,7 +33,7 @@ if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
 fi
 
 cd ${HOME}/git/${project}/
-make clean
+make clean &>/dev/null
 
 git checkout master -f
 git pull || true
@@ -59,7 +59,7 @@ if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
 fi
 
 cd ${HOME}/git/${project}/
-make clean
+make clean &>/dev/null
 
 git checkout master -f
 git pull || true
@@ -84,7 +84,7 @@ if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
 fi
 
 cd ${HOME}/git/${project}/
-make clean
+make clean &>/dev/null
 
 git checkout master -f
 git pull || true
