@@ -10,6 +10,7 @@ ping -c1 www.google.com | grep ttl &> /dev/null || network_down
 unset deb_pkgs
 dpkg -l | grep build-essential >/dev/null || deb_pkgs+="build-essential "
 dpkg -l | grep gstreamer-tools >/dev/null || deb_pkgs+="gstreamer-tools "
+dpkg -l | grep libgstreamer0.10-dev >/dev/null || deb_pkgs+="libgstreamer0.10-dev "
 
 if [ "${deb_pkgs}" ] ; then
 	echo "Installing: ${deb_pkgs}"
