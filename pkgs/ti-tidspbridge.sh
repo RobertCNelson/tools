@@ -43,3 +43,27 @@ git checkout ${git_sha} -b ${git_sha}-build
 make CROSS_COMPILE= 
 sudo make install
 
+git_sha="origin/master"
+project="gst-omapfb"
+server="git://github.com/felipec"
+
+if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
+	git clone ${server}/${project}.git ${HOME}/git/${project}/
+fi
+
+if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
+	rm -rf ${HOME}/git/${project}/ || true
+	echo "error: git failure, try re-runing"
+	exit
+fi
+
+cd ${HOME}/git/${project}/
+
+git checkout master -f
+git pull || true
+git branch ${git_sha}-build -D || true
+git checkout ${git_sha} -b ${git_sha}-build
+
+make CROSS_COMPILE= 
+sudo make install
+
