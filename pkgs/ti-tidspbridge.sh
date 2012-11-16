@@ -91,6 +91,11 @@ git pull || true
 
 git branch -D firmware-tmp || true
 git checkout origin/firmware -b firmware-tmp
+
+if [ ! -d /lib/dsp/ ] ; then
+	sudo mkdir -p /lib/dsp || true
+fi
+
 sudo cp -v firmware/test.dll64P /lib/dsp/
 
 git checkout master -f
