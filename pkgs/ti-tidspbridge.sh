@@ -149,6 +149,6 @@ if [ -f /etc/init.d/dsp_init ] ; then
 	sudo rm -f /etc/init.d/dsp_init || true
 fi
 
-cp -v /tmp/dsp_startup /etc/init.d/dsp_init
+sudo cp -v /tmp/dsp_startup /etc/init.d/dsp_init
 sudo chmod +x /etc/init.d/dsp_init
 sudo update-rc.d dsp_init defaults
