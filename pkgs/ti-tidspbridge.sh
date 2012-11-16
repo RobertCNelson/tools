@@ -41,6 +41,65 @@ git_generic () {
 	git checkout ${git_sha} -b ${git_sha}-build
 }
 
+file_dsp_startup () {
+	cat > "/tmp/dsp_startup" <<-__EOF__
+	#!/bin/sh -e
+	### BEGIN INIT INFO
+	# Provides:          dsp_startup
+	# Required-Start:    \$local_fs
+	# Required-Stop:     \$local_fs
+	# Default-Start:     2 3 4 5
+	# Default-Stop:      0 1 6
+	# Short-Description: Start daemon at boot time
+	# Description:       Enable service provided by daemon.
+	### END INIT INFO
+
+	if [ ! -f /lib/dsp/baseimage.dof ] ; then
+		echo "tidspbridge: missing /lib/dsp/baseimage.dof"
+		exit 0
+	fi
+
+	if [ -f /lib/modules/\$(uname -r)/kernel/drivers/staging/tidspbridge/bridgedriver.ko ] ; then
+		driver="bridgedriver"
+	fi
+
+	#v3.4.x
+	if [ -f /lib/modules/\$(uname -r)/kernel/drivers/staging/tidspbridge/tidspbridge.ko ] ; then
+		driver="tidspbridge"
+	fi
+
+	modprobe mailbox_mach
+	modprobe tidspbridge base_img=/lib/dsp/baseimage.dof
+
+	case "\$1" in
+	start)
+	        echo "tidspbridge: starting"
+	        modprobe mailbox_mach
+	        modprobe \${driver} base_img=/lib/dsp/baseimage.dof
+	        ;;
+	reload|force-reload|restart)
+	        echo "tidspbridge: restarting"
+	        rmmod \${driver} 2>/dev/null || true
+	        rmmod mailbox_mach 2>/dev/null || true
+	        modprobe mailbox_mach
+	        modprobe \${driver} base_img=/lib/dsp/baseimage.dof
+	        ;;
+	stop)
+	        echo "tidspbridge: stopping"
+	        rmmod \${driver} 2>/dev/null || true
+	        rmmod mailbox_mach 2>/dev/null || true
+	        ;;
+	*)
+	        echo "Usage: /etc/init.d/dsp_startup {start|stop|reload|restart|force-reload}"
+	        exit 1
+	        ;;
+	esac
+
+	exit 0
+
+	__EOF__
+}
+
 git_sha="origin/master"
 project="gst-dsp"
 server="git://github.com/felipec"
@@ -81,3 +140,12 @@ git_generic
 make CROSS_COMPILE= 
 sudo make install
 
+file_dsp_startup
+
+if [ -f /etc/init.d/dsp_init ] ; then
+	sudo rm -f /etc/init.d/dsp_init || true
+fi
+
+cp -v /tmp/dsp_startup /etc/init.d/dsp_init
+sudo chmod +x /etc/init.d/dsp_init
+sudo update-rc.d dsp_init defaults
