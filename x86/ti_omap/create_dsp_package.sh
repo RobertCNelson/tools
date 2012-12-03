@@ -43,7 +43,7 @@ DIST=$(lsb_release -sc)
 
 if [ "x$(uname -m)" == "xx86_64" ] ; then
 	echo ""
-	echo "Note: on the x86_64 platform, this script needs (ia32-libs)..."
+	echo "Note: to run this sript needs the 32-bit x86 (ia32-libs) packages on the x86_64 platform..."
 	echo "--------------------------------------------------------------"
 	echo ""
 fi
@@ -140,6 +140,6 @@ echo "Script Version ${VERSION}"
 echo "Email Bugs: bugs@rcn-ee.com"
 echo "-----------------------------"
 echo ""
-echo "Script Complete: Copy DSP_Install_libs.tar.gz to target device."
+echo "Script Complete: Copy DSP_Install_libs.tar.gz to the ARM target device, extract and run install-DSP.sh."
 echo ""
 
