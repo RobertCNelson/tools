@@ -103,6 +103,8 @@ file_dsp_startup () {
 	__EOF__
 }
 
+install_pkgs
+
 git_sha="origin/master"
 project="gst-dsp"
 server="git://github.com/felipec"
