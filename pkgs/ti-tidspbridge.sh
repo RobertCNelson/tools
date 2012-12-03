@@ -69,7 +69,7 @@ file_dsp_startup () {
 	        driver="tidspbridge"
 	fi
 
-	if [ "\${driver}" ] ; then
+	if [ ! "\${driver}" ] ; then
 	        echo "tidspbridge: no tidspbridge module"
 	        exit 1
 	fi
