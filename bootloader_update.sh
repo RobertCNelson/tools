@@ -66,12 +66,12 @@ dl_bootloader () {
 	fi
 
 	if [ "${spl_name}" ] ; then
-		MLO=$(cat ${TEMPDIR}/dl/${bootlist} | grep "${ABI}:${board}:SPL" | awk '{print $2}')
-		wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MLO}
-		MLO=${MLO##*/}
-		echo "SPL Bootloader: ${MLO}"
+		SPL=$(cat ${TEMPDIR}/dl/${bootlist} | grep "${ABI}:${board}:SPL" | awk '{print $2}')
+		wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${SPL}
+		SPL=${SPL##*/}
+		echo "SPL Bootloader: ${SPL}"
 	else
-		unset MLO
+		unset SPL
 	fi
 
 	if [ "${boot_name}" ] ; then
@@ -89,10 +89,10 @@ is_omap () {
 	boot_name="u-boot.img"
 }
 
-omap_fatfs_boot_part () {
+fatfs_boot () {
 	echo "-----------------------------"
 	echo "Warning: this script will flash your bootloader with:"
-	echo "MLO: [${MLO}]"
+	echo "SPL: [${SPL}]"
 	echo "u-boot.img: [${UBOOT}]"
 	echo "for: [${board}]"
 	echo ""
@@ -100,9 +100,9 @@ omap_fatfs_boot_part () {
 	[ "${REPLY}" == "y" ] || exit
 	echo "-----------------------------"
 	if [ "${spl_name}" ] ; then
-		if [ -f ${TEMPDIR}/dl/${MLO} ] ; then
+		if [ -f ${TEMPDIR}/dl/${SPL} ] ; then
 			rm -f ${DRIVE}/${spl_name} || true
-			cp -v ${TEMPDIR}/dl/${MLO} ${DRIVE}/${spl_name}
+			cp -v ${TEMPDIR}/dl/${SPL} ${DRIVE}/${spl_name}
 			sync
 		fi
 	fi
@@ -118,12 +118,7 @@ omap_fatfs_boot_part () {
 	echo "Bootloader Updated"
 }
 
-is_imx () {
-	unset spl_name
-	boot_name="u-boot.imx"
-}
-
-dd_to_drive () {
+dd_uboot_boot () {
 	echo "-----------------------------"
 	echo "Warning: this script will flash your bootloader with:"
 	echo "u-boot.imx: [${UBOOT}]"
@@ -133,23 +128,73 @@ dd_to_drive () {
 	[ "${REPLY}" == "y" ] || exit
 	echo "-----------------------------"
 
-	if [ "x${dd_seek}" == "x" ] ; then
-		echo "dd_seek not found in ${DRIVE}/SOC.sh halting"
+	if [ "x${dd_seek}" != "x" ] ; then
+		dd_uboot_seek=${dd_seek}
+	fi
+
+	if [ "x${dd_bs}" != "x" ] ; then
+		dd_uboot_bs=${dd_bs}
+	fi
+
+	if [ "x${dd_uboot_seek}" == "x" ] ; then
+		echo "dd_seek/dd_uboot_seek not found in ${DRIVE}/SOC.sh halting"
 		echo "-----------------------------"
 		exit
 	fi
 
-	if [ "x${dd_bs}" == "x" ] ; then
-		echo "dd_bs not found in ${DRIVE}/SOC.sh halting"
+	if [ "x${dd_uboot_bs}" == "x" ] ; then
+		echo "dd_bs/dd_uboot_bs not found in ${DRIVE}/SOC.sh halting"
 		echo "-----------------------------"
 		exit
 	fi
 
-	if [ "${boot_name}" ] ; then
-		if [ -f ${TEMPDIR}/dl/${UBOOT} ] ; then
-			sudo dd if=${TEMPDIR}/dl/${UBOOT} of=/dev/mmcblk0 seek=${dd_seek} bs=${dd_bs}
-			sync
-		fi
+	if [ -f ${TEMPDIR}/dl/${UBOOT} ] ; then
+		sudo dd if=${TEMPDIR}/dl/${UBOOT} of=/dev/mmcblk0 seek=${dd_uboot_seek} bs=${dd_uboot_bs}
+		sync
+	fi
+	echo "-----------------------------"
+	echo "Bootloader Updated"
+}
+
+dd_spl_uboot_boot () {
+	echo "-----------------------------"
+	echo "Warning: this script will flash your bootloader with:"
+	echo "u-boot-mmc-spl.bin: [${SPL}]"
+	echo "u-boot.bin: [${UBOOT}]"
+	echo "for: [${board}]"
+	echo ""
+	read -p "Are you 100% sure, on selecting [${board}] (y/n)? "
+	[ "${REPLY}" == "y" ] || exit
+	echo "-----------------------------"
+
+	if [ "x${dd_spl_uboot_seek}" == "x" ] ; then
+		echo "dd_spl_uboot_seek not found in ${DRIVE}/SOC.sh halting"
+		echo "-----------------------------"
+		exit
+	fi
+
+	if [ "x${dd_spl_uboot_bs}" == "x" ] ; then
+		echo "dd_spl_uboot_bs not found in ${DRIVE}/SOC.sh halting"
+		echo "-----------------------------"
+		exit
+	fi
+
+	if [ "x${dd_uboot_seek}" == "x" ] ; then
+		echo "dd_uboot_seek not found in ${DRIVE}/SOC.sh halting"
+		echo "-----------------------------"
+		exit
+	fi
+
+	if [ "x${dd_uboot_bs}" == "x" ] ; then
+		echo "dd_uboot_bs not found in ${DRIVE}/SOC.sh halting"
+		echo "-----------------------------"
+		exit
+	fi
+
+	if [ -f ${TEMPDIR}/dl/${UBOOT} ] ; then
+		sudo dd if=${TEMPDIR}/dl/${SPL} of=/dev/mmcblk0 seek=${dd_spl_uboot_seek} bs=${dd_spl_uboot_bs}
+		sudo dd if=${TEMPDIR}/dl/${UBOOT} of=/dev/mmcblk0 seek=${dd_uboot_seek} bs=${dd_uboot_bs}
+		sync
 	fi
 	echo "-----------------------------"
 	echo "Bootloader Updated"
@@ -159,15 +204,18 @@ got_board () {
 	BOOTLOADER=${board}
 
 	case "${bootloader_location}" in
-	omap_fatfs_boot_part)
+	omap_fatfs_boot_part|fatfs_boot)
 		is_omap
 		dl_bootloader
-		omap_fatfs_boot_part
+		fatfs_boot
 		;;
-	dd_to_drive)
-		is_imx
+	dd_to_drive|dd_uboot_boot)
 		dl_bootloader
-		dd_to_drive
+		dd_uboot_boot
+		;;
+	dd_spl_uboot_boot)
+		dl_bootloader
+		dd_spl_uboot_boot
 		;;
 	esac
 }
