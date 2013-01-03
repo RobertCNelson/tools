@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if ! id | grep -q root; then
+	echo "must be run as root"
+	exit
+fi
+
 EEPROM_LOCATION=/sys/bus/i2c/devices/2-0050/eeprom
 #MKEEPROM=./mkeeprom
 EEPROM_DATA=eeprom_data
