@@ -37,4 +37,12 @@ echo
 
 read ok
 dd if=$EEPROM_DATA of=$EEPROM_LOCATION bs=64
+
+echo
+echo "About to read EEPROM at $EEPROM_LOCATION"
+echo "Press any key to continue, Ctrl-C to abort"
+echo
+
+hexdump $EEPROM_LOCATION
+
 echo "Done"
