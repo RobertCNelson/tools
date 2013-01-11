@@ -84,6 +84,11 @@ dl_bootloader () {
 	fi
 }
 
+is_imx () {
+	unset spl_name
+	boot_name="u-boot.imx"
+}
+
 is_omap () {
 	spl_name="MLO"
 	boot_name="u-boot.img"
@@ -210,6 +215,7 @@ got_board () {
 		fatfs_boot
 		;;
 	dd_to_drive|dd_uboot_boot)
+		is_imx
 		dl_bootloader
 		dd_uboot_boot
 		;;
