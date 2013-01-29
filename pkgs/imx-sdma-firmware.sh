@@ -39,11 +39,11 @@ git checkout ${git_sha} -b ${git_sha}-build
 
 make
 
-if [ ! -d /lib/firmware/sdma ] ; then
-	sudo mkdir -p /lib/firmware/sdma || true
+if [ ! -d /lib/firmware/imx/sdma ] ; then
+	sudo mkdir -p /lib/firmware/imx/sdma || true
 fi
 
-sudo cp sdma*.bin /lib/firmware/sdma
+sudo cp sdma*.bin /lib/firmware/imx/sdma
 make clean
 
 if [ ! -f /boot/initrd.img-$(uname -r) ] ; then
