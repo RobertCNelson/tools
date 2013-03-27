@@ -23,7 +23,7 @@ sudo apt-get -y install xutils-dev
 #need to review:
 sudo apt-get -y install debhelper libudev-dev x11proto-core-dev libxext-dev x11proto-fonts-dev x11proto-gl-dev x11proto-xf86dri-dev x11proto-xf86dri-dev xserver-xorg-dev
 
-git_sha="libdrm-2.4.42"
+git_sha="libdrm-2.4.43"
 project="libdrm"
 server="git://anongit.freedesktop.org/mesa/drm"
 
