@@ -28,7 +28,8 @@ network_down () {
 ping -c1 www.google.com | grep ttl &> /dev/null || network_down
 
 unset deb_pkgs
-dpkg -l | grep build-essential >/dev/null || deb_pkgs+="parted "
+dpkg -l | grep parted >/dev/null || deb_pkgs+="parted "
+dpkg -l | grep dosfstools >/dev/null || deb_pkgs+="dosfstools "
 
 if [ "${deb_pkgs}" ] ; then
 	echo "Installing: ${deb_pkgs}"
