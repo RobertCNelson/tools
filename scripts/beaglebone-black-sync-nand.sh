@@ -35,3 +35,36 @@ if [ "${deb_pkgs}" ] ; then
 	sudo apt-get update
 	sudo apt-get -y install ${deb_pkgs}
 fi
+
+export DISK=/dev/mmcblk1
+
+sudo dd if=/dev/zero of=${DISK} bs=1024 count=1024
+sudo parted --script ${DISK} mklabel msdos
+
+sudo fdisk ${DISK} << __EOF__
+n
+p
+1
+ 
++64M
+t
+e
+p
+w
+__EOF__
+
+sudo parted --script ${DISK} set 1 boot on
+
+sudo mkfs.vfat -F 16 ${DISK}p1 -n boot
+
+sudo fdisk ${DISK} << __EOF__
+n
+p
+2
+ 
+ 
+w
+__EOF__
+
+sudo mkfs.ext4 ${DISK}p2 -L rootfs
+
