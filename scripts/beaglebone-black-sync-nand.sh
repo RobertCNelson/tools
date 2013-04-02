@@ -97,9 +97,13 @@ setup_boot () {
 }
 
 setup_rootfs () {
-	mkdir -p /tmp/boot/ || true
-	mount ${DISK}p2 /tmp/boot/
-	rsync -aAXv /* /tmp/boot/ --exclude={/dev/*,/proc/*,/sys/*,/tmp/*,/run/*,/mnt/*,/media/*,/lost+found,/boot/uboot/*}
+	mkdir -p /tmp/rootfs/ || true
+	mount ${DISK}p2 /tmp/rootfs/
+	rsync -aAXv /* /tmp/rootfs/ --exclude={/dev/*,/proc/*,/sys/*,/tmp/*,/run/*,/mnt/*,/media/*,/lost+found,/boot/uboot/*,/lib/modules/*}
+	mkdir /tmp/rootfs/lib/modules/`uname -r`
+	cp -rv /lib/modules/`uname -r`/* /tmp/rootfs/lib/modules/`uname -r`/
+	sed -i -e 's:mmcblk0p1:mmcblk1p1:g' /tmp/rootfs/etc/fstab
+	sed -i -e 's:mmcblk0p2:mmcblk1p2:g' /tmp/rootfs/etc/fstab
 	sync
 	umount ${DISK}p2 || true
 }
