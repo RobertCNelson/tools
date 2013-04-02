@@ -36,8 +36,9 @@ ping -c1 www.google.com | grep ttl &> /dev/null || network_down
 
 check_host_pkgs () {
 	unset deb_pkgs
-	dpkg -l | grep parted >/dev/null || deb_pkgs+="parted "
 	dpkg -l | grep dosfstools >/dev/null || deb_pkgs+="dosfstools "
+	dpkg -l | grep parted >/dev/null || deb_pkgs+="parted "
+	dpkg -l | grep rsync >/dev/null || deb_pkgs+="rsync "
 
 	if [ "${deb_pkgs}" ] ; then
 		echo "Installing: ${deb_pkgs}"
@@ -87,13 +88,23 @@ setup_boot () {
 	#cp these first:
 	cp -v /boot/uboot/MLO /tmp/boot/MLO
 	cp -v /boot/uboot/u-boot.img /tmp/boot/u-boot.img
-	cp -rv /boot/uboot/* /tmp/boot/
+#	cp -rv /boot/uboot/* /tmp/boot/
+	rsync -aAXv boot/uboot/ /tmp/boot/ --exclude={MLO,u-boot.img}
 	sed -i -e 's:mmcblk0p2:mmcblk1p2:g' /tmp/boot/uEnv.txt
 	sed -i -e 's/0:1/1:1/g' /tmp/boot/uEnv.txt
 	sync
 	umount ${DISK}p1 || true
 }
 
+setup_rootfs () {
+	mkdir -p /tmp/boot/ || true
+	mount ${DISK}p2 /tmp/boot/
+	rsync -aAXv /* /tmp/boot/ --exclude={/dev/*,/proc/*,/sys/*,/tmp/*,/run/*,/mnt/*,/media/*,/lost+found,/boot/uboot/*}
+	sync
+	umount ${DISK}p2 || true
+}
+
 check_host_pkgs
 reformat_emmc
 setup_boot
+setup_rootfs
