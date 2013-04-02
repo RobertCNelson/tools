@@ -85,12 +85,11 @@ reformat_emmc () {
 setup_boot () {
 	mkdir -p /tmp/boot/ || true
 	mount ${DISK}p1 /tmp/boot/
-	#cp these first:
+	#Make sure the BootLoader gets copied first:
 	cp -v /boot/uboot/MLO /tmp/boot/MLO
 	cp -v /boot/uboot/u-boot.img /tmp/boot/u-boot.img
-#	cp -rv /boot/uboot/* /tmp/boot/
+
 	rsync -aAXv /boot/uboot/ /tmp/boot/ --exclude={MLO,u-boot.img}
-	sed -i -e 's:mmcblk0p2:mmcblk1p2:g' /tmp/boot/uEnv.txt
 	sed -i -e 's/0:1/1:1/g' /tmp/boot/uEnv.txt
 	sync
 	umount ${DISK}p1 || true
@@ -101,9 +100,7 @@ setup_rootfs () {
 	mount ${DISK}p2 /tmp/rootfs/
 	rsync -aAXv /* /tmp/rootfs/ --exclude={/dev/*,/proc/*,/sys/*,/tmp/*,/run/*,/mnt/*,/media/*,/lost+found,/boot/uboot/*,/lib/modules/*}
 	mkdir /tmp/rootfs/lib/modules/`uname -r`
-	cp -rv /lib/modules/`uname -r`/* /tmp/rootfs/lib/modules/`uname -r`/
-	sed -i -e 's:mmcblk0p1:mmcblk1p1:g' /tmp/rootfs/etc/fstab
-	sed -i -e 's:mmcblk0p2:mmcblk1p2:g' /tmp/rootfs/etc/fstab
+	rsync -aAXv /lib/modules/`uname -r`/* /tmp/rootfs/lib/modules/`uname -r`/
 	sync
 	umount ${DISK}p2 || true
 }
