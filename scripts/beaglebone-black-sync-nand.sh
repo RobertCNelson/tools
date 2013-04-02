@@ -47,6 +47,9 @@ check_host_pkgs () {
 }
 
 reformat_emmc () {
+	umount ${DISK}p1
+	umount ${DISK}p2
+
 	dd if=/dev/zero of=${DISK} bs=1024 count=1024
 	parted --script ${DISK} mklabel msdos
 
@@ -84,6 +87,11 @@ setup_boot () {
 	#cp these first:
 	cp -v /boot/uboot/MLO /tmp/boot/MLO
 	cp -v /boot/uboot/u-boot.img /tmp/boot/u-boot.img
+	cp -rv /boot/uboot/* /tmp/boot/
+	sed -i -e 's:mmcblk0p2:mmcblk1p2:g' /tmp/boot/uEnv.txt
+	sed -i -e 's/0:1/1:1/g' /tmp/boot/uEnv.txt
+	sync
+	umount ${DISK}p1
 }
 
 check_host_pkgs
