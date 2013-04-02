@@ -78,5 +78,14 @@ reformat_emmc () {
 	mkfs.ext4 ${DISK}p2 -L rootfs
 }
 
+setup_boot () {
+	mkdir /tmp/boot/
+	mount ${DISK}p1 /tmp/boot/
+	#cp these first:
+	cp -v /boot/uboot/MLO /tmp/boot/MLO
+	cp -v /boot/uboot/u-boot.img /tmp/boot/u-boot.img
+}
+
 check_host_pkgs
 reformat_emmc
+setup_boot
