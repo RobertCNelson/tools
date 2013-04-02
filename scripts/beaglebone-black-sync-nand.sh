@@ -20,6 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+if ! id | grep -q root; then
+	echo "must be run as root"
+	exit
+fi
+
+DISK=/dev/mmcblk1
+
 network_down () {
 	echo "Network Down"
 	exit
@@ -27,45 +34,49 @@ network_down () {
 
 ping -c1 www.google.com | grep ttl &> /dev/null || network_down
 
-unset deb_pkgs
-dpkg -l | grep parted >/dev/null || deb_pkgs+="parted "
-dpkg -l | grep dosfstools >/dev/null || deb_pkgs+="dosfstools "
+check_host_pkgs () {
+	unset deb_pkgs
+	dpkg -l | grep parted >/dev/null || deb_pkgs+="parted "
+	dpkg -l | grep dosfstools >/dev/null || deb_pkgs+="dosfstools "
 
-if [ "${deb_pkgs}" ] ; then
-	echo "Installing: ${deb_pkgs}"
-	sudo apt-get update
-	sudo apt-get -y install ${deb_pkgs}
-fi
+	if [ "${deb_pkgs}" ] ; then
+		echo "Installing: ${deb_pkgs}"
+		apt-get update
+		apt-get -y install ${deb_pkgs}
+	fi
+}
 
-export DISK=/dev/mmcblk1
+reformat_emmc () {
+	dd if=/dev/zero of=${DISK} bs=1024 count=1024
+	parted --script ${DISK} mklabel msdos
 
-sudo dd if=/dev/zero of=${DISK} bs=1024 count=1024
-sudo parted --script ${DISK} mklabel msdos
+	fdisk ${DISK} <<-__EOF__
+	n
+	p
+	1
+	 
+	+64M
+	t
+	e
+	p
+	w
+	__EOF__
 
-sudo fdisk ${DISK} << __EOF__
-n
-p
-1
- 
-+64M
-t
-e
-p
-w
-__EOF__
+	parted --script ${DISK} set 1 boot on
 
-sudo parted --script ${DISK} set 1 boot on
+	mkfs.vfat -F 16 ${DISK}p1 -n boot
 
-sudo mkfs.vfat -F 16 ${DISK}p1 -n boot
+	fdisk ${DISK} <<-__EOF__
+	n
+	p
+	2
+	 
+	 
+	w
+	__EOF__
 
-sudo fdisk ${DISK} << __EOF__
-n
-p
-2
- 
- 
-w
-__EOF__
+	mkfs.ext4 ${DISK}p2 -L rootfs
+}
 
-sudo mkfs.ext4 ${DISK}p2 -L rootfs
-
+check_host_pkgs
+reformat_emmc
