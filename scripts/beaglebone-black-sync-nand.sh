@@ -89,7 +89,7 @@ setup_boot () {
 	cp -v /boot/uboot/MLO /tmp/boot/MLO
 	cp -v /boot/uboot/u-boot.img /tmp/boot/u-boot.img
 #	cp -rv /boot/uboot/* /tmp/boot/
-	rsync -aAXv boot/uboot/ /tmp/boot/ --exclude={MLO,u-boot.img}
+	rsync -aAXv /boot/uboot/ /tmp/boot/ --exclude={MLO,u-boot.img}
 	sed -i -e 's:mmcblk0p2:mmcblk1p2:g' /tmp/boot/uEnv.txt
 	sed -i -e 's/0:1/1:1/g' /tmp/boot/uEnv.txt
 	sync
