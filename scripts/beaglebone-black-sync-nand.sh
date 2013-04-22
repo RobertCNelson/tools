@@ -95,7 +95,7 @@ setup_boot () {
 	cp -v /boot/uboot/MLO /tmp/boot/MLO
 	cp -v /boot/uboot/u-boot.img /tmp/boot/u-boot.img
 
-	rsync -aAXv /boot/uboot/ /tmp/boot/ --exclude={MLO,u-boot.img}
+	rsync -aAXv /boot/uboot/ /tmp/boot/ --exclude={MLO,u-boot.img,*bak}
 	sed -i -e 's/0:1/1:1/g' /tmp/boot/uEnv.txt
 	sync
 	umount ${DISK}p1 || true
@@ -104,8 +104,9 @@ setup_boot () {
 setup_rootfs () {
 	mkdir -p /tmp/rootfs/ || true
 	mount ${DISK}p2 /tmp/rootfs/
-	rsync -aAXv /* /tmp/rootfs/ --exclude={/dev/*,/proc/*,/sys/*,/tmp/*,/run/*,/mnt/*,/media/*,/lost+found,/boot/uboot/*,/lib/modules/*}
-	mkdir /tmp/rootfs/lib/modules/`uname -r`
+	rsync -aAXv /* /tmp/rootfs/ --exclude={/dev/*,/proc/*,/sys/*,/tmp/*,/run/*,/mnt/*,/media/*,/lost+found,/boot/*,/lib/modules/*}
+	mkdir -p /tmp/rootfs/boot/uboot/ || true
+	mkdir -p /tmp/rootfs/lib/modules/`uname -r` || true
 	rsync -aAXv /lib/modules/`uname -r`/* /tmp/rootfs/lib/modules/`uname -r`/
 	sync
 	umount ${DISK}p2 || true
