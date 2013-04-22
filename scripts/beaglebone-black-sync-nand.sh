@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/sh -e
 #
 # Copyright (c) 2013 Robert Nelson <robertcnelson@gmail.com>
 #
@@ -32,17 +32,17 @@ network_down () {
 	exit
 }
 
-ping -c1 www.google.com | grep ttl &> /dev/null || network_down
+ping -c1 www.google.com | grep ttl >/dev/null 2>&1 || network_down
 
 check_host_pkgs () {
 	unset deb_pkgs
-	dpkg -l | grep dosfstools >/dev/null || deb_pkgs+="dosfstools "
-	dpkg -l | grep parted >/dev/null || deb_pkgs+="parted "
-	dpkg -l | grep rsync >/dev/null || deb_pkgs+="rsync "
+	dpkg -l | grep dosfstools >/dev/null || deb_pkgs="${deb_pkgs}dosfstools "
+	dpkg -l | grep parted >/dev/null || deb_pkgs="${deb_pkgs}parted "
+	dpkg -l | grep rsync >/dev/null || deb_pkgs="${deb_pkgs}rsync "
 
 	if [ "${deb_pkgs}" ] ; then
 		echo "Installing: ${deb_pkgs}"
-		apt-get update
+		apt-get update -o Acquire::Pdiffs=false
 		apt-get -y install ${deb_pkgs}
 	fi
 }
@@ -53,6 +53,7 @@ reformat_emmc () {
 
 	dd if=/dev/zero of=${DISK} bs=1024 count=1024
 	parted --script ${DISK} mklabel msdos
+	sync
 
 	fdisk ${DISK} <<-__EOF__
 	n
@@ -65,10 +66,13 @@ reformat_emmc () {
 	p
 	w
 	__EOF__
+	sync
 
 	parted --script ${DISK} set 1 boot on
+	sync
 
 	mkfs.vfat -F 16 ${DISK}p1 -n boot
+	sync
 
 	fdisk ${DISK} <<-__EOF__
 	n
@@ -78,8 +82,10 @@ reformat_emmc () {
 	 
 	w
 	__EOF__
+	sync
 
 	mkfs.ext4 ${DISK}p2 -L rootfs
+	sync
 }
 
 setup_boot () {
