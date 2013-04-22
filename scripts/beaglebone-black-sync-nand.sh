@@ -67,6 +67,7 @@ reformat_emmc () {
 	w
 	__EOF__
 	sync
+	partprobe ${DISK}
 
 	parted --script ${DISK} set 1 boot on
 	sync
@@ -83,6 +84,7 @@ reformat_emmc () {
 	w
 	__EOF__
 	sync
+	partprobe ${DISK}
 
 	mkfs.ext4 ${DISK}p2 -L rootfs
 	sync
