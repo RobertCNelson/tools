@@ -47,7 +47,20 @@ check_host_pkgs () {
 	fi
 }
 
-reformat_emmc () {
+format_boot () {
+	parted --script ${DISK} set 1 boot on
+	sync
+
+	mkfs.vfat -F 16 ${DISK}p1 -n boot
+	sync
+}
+
+format_root () {
+	mkfs.ext4 ${DISK}p2 -L rootfs
+	sync
+}
+
+repartition_emmc () {
 	umount ${DISK}p1 || true
 	umount ${DISK}p2 || true
 
@@ -68,11 +81,7 @@ reformat_emmc () {
 	__EOF__
 	sync
 
-	parted --script ${DISK} set 1 boot on
-	sync
-
-	mkfs.vfat -F 16 ${DISK}p1 -n boot
-	sync
+	format_boot
 
 	fdisk ${DISK} <<-__EOF__
 	n
@@ -83,12 +92,23 @@ reformat_emmc () {
 	w
 	__EOF__
 	sync
-
-	mkfs.ext4 ${DISK}p2 -L rootfs
-	sync
 }
 
-setup_boot () {
+mount_n_check () {
+	lsblk | grep mmcblk1p1 >/dev/null 2<&1 || repartition_emmc
+	mkdir -p /tmp/boot/ || true
+	mount ${DISK}p1 /tmp/boot/
+	if [ -f /tmp/boot/MLO ] ; then
+		umount ${DISK}p1 || true
+		format_boot
+		format_root
+	else
+		umount ${DISK}p1 || true
+		repartition_emmc
+	fi
+}
+
+copy_boot () {
 	mkdir -p /tmp/boot/ || true
 	mount ${DISK}p1 /tmp/boot/
 	#Make sure the BootLoader gets copied first:
@@ -96,12 +116,11 @@ setup_boot () {
 	cp -v /boot/uboot/u-boot.img /tmp/boot/u-boot.img
 
 	rsync -aAXv /boot/uboot/ /tmp/boot/ --exclude={MLO,u-boot.img,*bak}
-	sed -i -e 's/0:1/1:1/g' /tmp/boot/uEnv.txt
 	sync
 	umount ${DISK}p1 || true
 }
 
-setup_rootfs () {
+copy_rootfs () {
 	mkdir -p /tmp/rootfs/ || true
 	mount ${DISK}p2 /tmp/rootfs/
 	rsync -aAXv /* /tmp/rootfs/ --exclude={/dev/*,/proc/*,/sys/*,/tmp/*,/run/*,/mnt/*,/media/*,/lost+found,/boot/*,/lib/modules/*}
@@ -113,6 +132,6 @@ setup_rootfs () {
 }
 
 check_host_pkgs
-reformat_emmc
-setup_boot
-setup_rootfs
+mount_n_check
+copy_boot
+copy_rootfs
