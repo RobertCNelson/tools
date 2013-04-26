@@ -61,9 +61,6 @@ format_root () {
 }
 
 repartition_emmc () {
-	umount ${DISK}p1 || true
-	umount ${DISK}p2 || true
-
 	dd if=/dev/zero of=${DISK} bs=1024 count=1024
 	parted --script ${DISK} mklabel msdos
 	sync
@@ -92,9 +89,14 @@ repartition_emmc () {
 	w
 	__EOF__
 	sync
+
+	format_root
 }
 
 mount_n_check () {
+	umount ${DISK}p1 || true
+	umount ${DISK}p2 || true
+
 	lsblk | grep mmcblk1p1 >/dev/null 2<&1 || repartition_emmc
 	mkdir -p /tmp/boot/ || true
 	mount ${DISK}p1 /tmp/boot/
