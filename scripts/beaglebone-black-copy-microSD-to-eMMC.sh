@@ -138,6 +138,11 @@ copy_rootfs () {
 	rsync -aAXv /lib/modules/`uname -r`/* /tmp/rootfs/lib/modules/`uname -r`/
 	sync
 	umount ${DISK}p2 || true
+	echo ""
+	echo "This script has now completed it's task"
+	echo "-----------------------------"
+	echo "Note: Actually reset the board, a software reset [sudo reboot] is not enough."
+	echo "-----------------------------"
 }
 
 check_host_pkgs
