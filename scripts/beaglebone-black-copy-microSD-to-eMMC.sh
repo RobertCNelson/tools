@@ -126,6 +126,18 @@ copy_boot () {
 
 	rsync -aAXv /boot/uboot/ /tmp/boot/ --exclude={MLO,u-boot.img,*bak}
 	sync
+
+	unset root_uuid
+	root_uuid=$(/sbin/blkid -s UUID -o value /dev/mmcblk1p2)
+	if [ "${root_uuid}" ] ; then
+		root_uuid="UUID=${root_uuid}"
+		sed -i -e 's:/dev/mmcblk0p2:'${root_uuid}':g' /tmp/boot/uEnv.txt
+	else
+		root_uuid="/dev/mmcblk0p2"
+	fi
+	sync
+	cat /tmp/boot/uEnv.txt
+
 	umount ${DISK}p1 || true
 }
 
@@ -144,14 +156,6 @@ copy_rootfs () {
 		boot_uuid="UUID=${boot_uuid}"
 	else
 		boot_uuid="/dev/mmcblk0p1"
-	fi
-
-	unset root_uuid
-	root_uuid=$(/sbin/blkid -s UUID -o value /dev/mmcblk1p2)
-	if [ "${root_uuid}" ] ; then
-		root_uuid="UUID=${root_uuid}"
-	else
-		root_uuid="/dev/mmcblk0p2"
 	fi
 
 	unset root_filesystem
