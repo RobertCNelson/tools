@@ -57,7 +57,7 @@ fdisk_toggle_boot () {
 }
 
 format_boot () {
-	fdisk -l ${DISK} | grep ${DISK}p1 | grep '*' || fdisk_toggle_boot
+	LC_ALL=C fdisk -l ${DISK} | grep ${DISK}p1 | grep '*' || fdisk_toggle_boot
 
 	mkfs.vfat -F 16 ${DISK}p1 -n boot
 	sync
