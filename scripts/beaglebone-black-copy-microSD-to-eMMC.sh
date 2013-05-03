@@ -136,7 +136,6 @@ copy_boot () {
 		root_uuid="/dev/mmcblk0p2"
 	fi
 	sync
-	cat /tmp/boot/uEnv.txt
 
 	umount ${DISK}p1 || true
 }
@@ -174,13 +173,12 @@ copy_rootfs () {
 	echo "${root_uuid}  /            ${root_filesystem}  noatime,errors=remount-ro  0  1" >> /tmp/rootfs/etc/fstab
 	echo "${boot_uuid}  /boot/uboot  auto  defaults                   0  0" >> /tmp/rootfs/etc/fstab
 	sync
-	cat /tmp/rootfs/etc/fstab
 
 	umount ${DISK}p2 || true
 	echo ""
 	echo "This script has now completed it's task"
 	echo "-----------------------------"
-	echo "Note: Actually reset the board, a software reset [sudo reboot] is not enough."
+	echo "Note: Actually unpower the board, a reset [sudo reboot] is not enough."
 	echo "-----------------------------"
 }
 
