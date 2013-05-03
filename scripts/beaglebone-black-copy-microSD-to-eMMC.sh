@@ -121,8 +121,12 @@ copy_boot () {
 	mkdir -p /tmp/boot/ || true
 	mount ${DISK}p1 /tmp/boot/
 	#Make sure the BootLoader gets copied first:
+	rm -f /tmp/boot/MLO || true
 	cp -v /boot/uboot/MLO /tmp/boot/MLO
+	sync
+	rm -f /tmp/boot/u-boot.img || true
 	cp -v /boot/uboot/u-boot.img /tmp/boot/u-boot.img
+	sync
 
 	rsync -aAXv /boot/uboot/ /tmp/boot/ --exclude={MLO,u-boot.img,*bak}
 	sync
