@@ -48,7 +48,11 @@ check_host_pkgs () {
 }
 
 format_boot () {
-	parted --script ${DISK} set 1 boot on
+	fdisk ${DISK} <<-__EOF__
+	a
+	1
+	w
+	__EOF__
 	sync
 
 	mkfs.vfat -F 16 ${DISK}p1 -n boot
