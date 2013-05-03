@@ -103,13 +103,16 @@ mount_n_check () {
 
 	lsblk | grep mmcblk1p1 >/dev/null 2<&1 || repartition_emmc
 	mkdir -p /tmp/boot/ || true
-	mount ${DISK}p1 /tmp/boot/
-	if [ -f /tmp/boot/MLO ] ; then
-		umount ${DISK}p1 || true
-		format_boot
-		format_root
+	if mount -t vfat ${DISK}p1 /tmp/boot/ ; then
+		if [ -f /tmp/boot/MLO ] ; then
+			umount ${DISK}p1 || true
+			format_boot
+			format_root
+		else
+			umount ${DISK}p1 || true
+			repartition_emmc
+		fi
 	else
-		umount ${DISK}p1 || true
 		repartition_emmc
 	fi
 }
