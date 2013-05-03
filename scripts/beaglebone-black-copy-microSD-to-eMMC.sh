@@ -47,13 +47,17 @@ check_host_pkgs () {
 	fi
 }
 
-format_boot () {
+fdisk_toggle_boot () {
 	fdisk ${DISK} <<-__EOF__
 	a
 	1
 	w
 	__EOF__
 	sync
+}
+
+format_boot () {
+	fdisk -l ${DISK} | grep ${DISK}p1 | grep '*' || fdisk_toggle_boot
 
 	mkfs.vfat -F 16 ${DISK}p1 -n boot
 	sync
