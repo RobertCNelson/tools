@@ -121,6 +121,16 @@ mount_n_check () {
 	fi
 }
 
+update_uuid () {
+	device_id=$(cat /tmp/boot/uEnv.txt | grep mmcroot | grep UUID | awk '{print $1}' | awk -F '=' '{print $2}')
+	sed -i -e 's:'${device_id}':'${root_uuid}':g' /tmp/boot/uEnv.txt
+}
+
+add_uuid () {
+	device_id=$(cat /tmp/boot/uEnv.txt | grep mmcroot | grep mmcblk | awk '{print $1}' | awk -F '=' '{print $2}')
+	sed -i -e 's:'${device_id}':'${root_uuid}':g' /tmp/boot/uEnv.txt
+}
+
 copy_boot () {
 	mkdir -p /tmp/boot/ || true
 	mount ${DISK}p1 /tmp/boot/
@@ -139,8 +149,12 @@ copy_boot () {
 	root_uuid=$(/sbin/blkid -s UUID -o value /dev/mmcblk1p2)
 	if [ "${root_uuid}" ] ; then
 		root_uuid="UUID=${root_uuid}"
-		#FIXME: what if uEnv.txt is already a uuid...
-		sed -i -e 's:/dev/mmcblk0p2:'${root_uuid}':g' /tmp/boot/uEnv.txt
+
+		#Do we need to update the UUID?
+		cat /tmp/boot/uEnv.txt | grep mmcroot | grep UUID && update_uuid
+
+		#Or can we just add the new UUID?
+		cat /tmp/boot/uEnv.txt | grep mmcroot | grep mmcblk && add_uuid
 	else
 		root_uuid="/dev/mmcblk0p2"
 	fi
