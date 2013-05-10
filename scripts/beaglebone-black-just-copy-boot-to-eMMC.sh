@@ -32,8 +32,6 @@ network_down () {
 	exit
 }
 
-ping -c1 www.google.com | grep ttl >/dev/null 2>&1 || network_down
-
 check_host_pkgs () {
 	unset deb_pkgs
 	dpkg -l | grep dosfstools >/dev/null || deb_pkgs="${deb_pkgs}dosfstools "
@@ -41,6 +39,7 @@ check_host_pkgs () {
 	dpkg -l | grep rsync >/dev/null || deb_pkgs="${deb_pkgs}rsync "
 
 	if [ "${deb_pkgs}" ] ; then
+		ping -c1 www.google.com | grep ttl >/dev/null 2>&1 || network_down
 		echo "Installing: ${deb_pkgs}"
 		apt-get update -o Acquire::Pdiffs=false
 		apt-get -y install ${deb_pkgs}
