@@ -32,6 +32,14 @@ network_down () {
 	exit
 }
 
+check_running_system () {
+	if [ ! -f /boot/uboot/uEnv.txt ] ; then
+		echo "Error: script halting, system unrecognized..."
+		echo "unable to find: [/boot/uboot/uEnv.txt] is /dev/mmcblk0p1 mounted?"
+		exit 1
+	fi
+}
+
 check_host_pkgs () {
 	unset deb_pkgs
 	dpkg -l | grep dosfstools >/dev/null || deb_pkgs="${deb_pkgs}dosfstools "
@@ -188,6 +196,7 @@ copy_rootfs () {
 	echo "-----------------------------"
 }
 
+check_running_system
 check_host_pkgs
 mount_n_check
 copy_boot
