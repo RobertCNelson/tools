@@ -24,10 +24,11 @@ fi
 
 MKIMAGE=$(which mkimage 2>/dev/null)
 if [ "x${MKIMAGE}" != "x" ] ; then
+	if [ -f /boot/uboot/uInitrd ] ; then
+		mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-$(uname -r) /boot/uboot/uInitrd
+	fi
+
 	if [ -f /boot/uboot/uImage ] ; then
-		if [ -f /boot/initrd.img-$(uname -r) ] ; then
-			mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-$(uname -r) /boot/uboot/uInitrd
-		fi
 		if [ -f /boot/uboot/boot.cmd ] ; then
 			mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n "Boot Script" -d /boot/uboot/boot.cmd /boot/uboot/boot.scr
 			cp -v /boot/uboot/boot.scr /boot/uboot/boot.ini

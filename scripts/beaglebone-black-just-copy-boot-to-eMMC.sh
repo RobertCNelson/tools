@@ -45,12 +45,34 @@ check_host_pkgs () {
 	dpkg -l | grep dosfstools >/dev/null || deb_pkgs="${deb_pkgs}dosfstools "
 	dpkg -l | grep parted >/dev/null || deb_pkgs="${deb_pkgs}parted "
 	dpkg -l | grep rsync >/dev/null || deb_pkgs="${deb_pkgs}rsync "
+	#ignoring Squeeze or Lucid: uboot-mkimage
+	dpkg -l | grep u-boot-tools >/dev/null || deb_pkgs="${deb_pkgs}u-boot-tools"
 
 	if [ "${deb_pkgs}" ] ; then
 		ping -c1 www.google.com | grep ttl >/dev/null 2>&1 || network_down
 		echo "Installing: ${deb_pkgs}"
 		apt-get update -o Acquire::Pdiffs=false
 		apt-get -y install ${deb_pkgs}
+	fi
+}
+
+update_boot_files () {
+	if [ ! -f /boot/initrd.img-$(uname -r) ] ; then
+		update-initramfs -c -k $(uname -r)
+	else
+		update-initramfs -u -k $(uname -r)
+	fi
+
+	if [ -f /boot/vmlinuz-$(uname -r) ] ; then
+		cp -v /boot/vmlinuz-$(uname -r) /boot/uboot/zImage
+	fi
+
+	if [ -f /boot/initrd.img-$(uname -r) ] ; then
+		cp -v /boot/initrd.img-$(uname -r) /boot/uboot/initrd.img
+	fi
+
+	if [ -f /boot/uboot/uInitrd ] ; then
+		mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-$(uname -r) /boot/uboot/uInitrd
 	fi
 }
 
@@ -154,6 +176,7 @@ fix_rootfs () {
 
 check_running_system
 check_host_pkgs
+update_boot_files
 mount_n_check
 copy_boot
 fix_rootfs
