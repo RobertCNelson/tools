@@ -65,6 +65,9 @@ if [ ! "${DEV_ADDR}" ] ; then
 	#till i get this working...
 	#hexdump -e '8/1 "%c"' /proc/device-tree/ocp/ethernet@4a100000/slave@4a100300/mac-address -s 8 -n 4-s 8 -n 4
 	echo "DEV_ADDR: ${DEV_ADDR}"
+
+#Debug hack...
+DEV_ADDR="bc:6a:29:79:99:93"
 fi
 
 modprobe g_multi file=/dev/mmcblk0p1 cdrom=0 stall=0 removable=1 nofua=1 iSerialNumber=${SERIAL_NUMBER} iManufacturer=Circuitco  iProduct=BeagleBone${BLACK} host_addr=${DEV_ADDR}
