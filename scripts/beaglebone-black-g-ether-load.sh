@@ -60,6 +60,10 @@ if [ "${ISBLACK}" = "BNLT" ] ; then
 fi
 
 if [ ! "${DEV_ADDR}" ] ; then
+	cpsw_1=$(cat /proc/device-tree/ocp/ethernet@4a100000/slave@4a100300/mac-address)
+	DEV_ADDR=$(hex_to_mac_addr "${cpsw_1}")
+	echo "DEV_ADDR: ${DEV_ADDR}"
+
 	#Just a temp hack:
 	DEV_ADDR=$(dmesg | grep cpsw.1 | awk '{print $9}')
 	#till i get this working...
