@@ -73,6 +73,12 @@ sleep 1
 
 sed -i -e 's:DHCPD_ENABLED="no":#DHCPD_ENABLED="no":g' /etc/default/udhcpd
 
+#Distro default...
+deb_udhcpd=$(cat /etc/udhcpd.conf | grep Sample)
+if [ "${deb_udhcpd}" ] ; then
+	mv /etc/udhcpd.conf /etc/udhcpd.conf.bak
+fi
+
 if [ ! -f /etc/udhcpd.conf ] ; then
 	echo "start      192.168.7.1" > /etc/udhcpd.conf
 	echo "end        192.168.7.1" >> /etc/udhcpd.conf
