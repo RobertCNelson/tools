@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #Based off:
 #https://github.com/beagleboard/meta-beagleboard/blob/master/meta-beagleboard-extras/recipes-support/usb-gadget/gadget-init/g-ether-load.sh
