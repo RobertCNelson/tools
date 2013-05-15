@@ -47,7 +47,7 @@ DEVMEM_ADDR_HI=$(reverse_bytes ${DEVMEM_ADDR_HI})
 DEV_ADDR=$(hex_to_mac_addr "${DEVMEM_ADDR_HI}${DEVMEM_ADDR_LO}")
 
 SERIAL_NUMBER=$(hexdump -e '8/1 "%c"' /sys/bus/i2c/devices/0-0050/eeprom -s 14 -n 2)-$(hexdump -e '8/1 "%c"' /sys/bus/i2c/devices/0-0050/eeprom -s 16 -n 12)
-ISBLACK=$(hexdump -e '8/1 "%c"' /sys/bus/i2c/devices/0-0050/eeprom -s 8 -n 4)
+ISBLACK=$(hexdump -e '8/1 "%c"' /sys/bus/i2c/devices/0-0050/eeprom -s 8 -n 4-s 8 -n 4)
 
 BLACK=""
 
@@ -59,7 +59,12 @@ if [ "${ISBLACK}" = "BNLT" ] ; then
 	BLACK="Black"
 fi
 
-echo "DevAddr:${DEV_ADDR}"
+if [ ! "${DEV_ADDR}" ] ; then
+	#Just a temp hack:
+	DEV_ADDR=$(dmesg | grep cpsw.1 | awk '{print $9}')
+	#till i get this working...
+	#hexdump -e '8/1 "%c"' /proc/device-tree/ocp/ethernet@4a100000/slave@4a100300/mac-address -s 8 -n 4-s 8 -n 4
+fi
 
 modprobe g_multi file=/dev/mmcblk0p1 cdrom=0 stall=0 removable=1 nofua=1 iSerialNumber=${SERIAL_NUMBER} iManufacturer=Circuitco  iProduct=BeagleBone${BLACK} host_addr=${DEV_ADDR}
 
