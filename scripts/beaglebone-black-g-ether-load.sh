@@ -64,11 +64,14 @@ if [ ! "${DEV_ADDR}" ] ; then
 	DEV_ADDR=$(dmesg | grep cpsw.1 | awk '{print $9}')
 	#till i get this working...
 	#hexdump -e '8/1 "%c"' /proc/device-tree/ocp/ethernet@4a100000/slave@4a100300/mac-address -s 8 -n 4-s 8 -n 4
+	echo "DEV_ADDR: ${DEV_ADDR}"
 fi
 
 modprobe g_multi file=/dev/mmcblk0p1 cdrom=0 stall=0 removable=1 nofua=1 iSerialNumber=${SERIAL_NUMBER} iManufacturer=Circuitco  iProduct=BeagleBone${BLACK} host_addr=${DEV_ADDR}
 
 sleep 1
+
+sed -i -e 's:DHCPD_ENABLED="no":#DHCPD_ENABLED="no":g' /etc/default/udhcpd
 
 if [ ! -f /etc/udhcpd.conf ] ; then
 	echo "start      192.168.7.1" > /etc/udhcpd.conf
