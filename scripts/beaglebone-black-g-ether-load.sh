@@ -59,9 +59,19 @@ if [ "${ISBLACK}" = "BNLT" ] ; then
 	BLACK="Black"
 fi
 
+echo "DevAddr:${DEV_ADDR}"
+
 modprobe g_multi file=/dev/mmcblk0p1 cdrom=0 stall=0 removable=1 nofua=1 iSerialNumber=${SERIAL_NUMBER} iManufacturer=Circuitco  iProduct=BeagleBone${BLACK} host_addr=${DEV_ADDR}
 
 sleep 1
+
+if [ ! -f /etc/udhcpd.conf ] ; then
+	echo "start      192.168.7.1" > /etc/udhcpd.conf
+	echo "end        192.168.7.1" >> /etc/udhcpd.conf
+	echo "interface  usb0" >> /etc/udhcpd.conf
+	echo "max_leases 1" >> /etc/udhcpd.conf
+	echo "option subnet 255.255.255.252" >> /etc/udhcpd.conf
+fi
 
 /sbin/ifconfig usb0 192.168.7.2 netmask 255.255.255.252
 /usr/sbin/udhcpd -f -S /etc/udhcpd.conf
