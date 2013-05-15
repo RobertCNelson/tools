@@ -17,13 +17,13 @@ if [ "${ISBLACK}" = "BNLT" ] ; then
 fi
 
 mac_address="/proc/device-tree/ocp/ethernet@4a100000/slave@4a100200/mac-address"
-if [ -f ${mac_address} ] then
+if [ -f ${mac_address} ] ; then
 	cpsw_0_mac=$(hexdump -v -e '1/1 "%02X" ":"' ${mac_address} | sed 's/.$//')
 	echo "cpsw.0: ${cpsw_0_mac}"
 fi
 
 mac_address="/proc/device-tree/ocp/ethernet@4a100000/slave@4a100300/mac-address"
-if [ -f ${mac_address} ] then
+if [ -f ${mac_address} ] ; then
 	cpsw_1_mac=$(hexdump -v -e '1/1 "%02X" ":"' ${mac_address} | sed 's/.$//')
 	echo "cpsw.1: ${cpsw_1_mac}"
 fi
