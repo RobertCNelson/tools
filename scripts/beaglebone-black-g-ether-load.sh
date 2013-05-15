@@ -3,49 +3,6 @@
 #Based off:
 #https://github.com/beagleboard/meta-beagleboard/blob/master/meta-beagleboard-extras/recipes-support/usb-gadget/gadget-init/g-ether-load.sh
 
-get_devmem() 
-{
-	/usr/bin/devmem2 $1 | grep ": " | cut -d ":" -f 2|cut -d "x" -f 2
-}
-
-hex_to_mac_addr()
-{
-	addr=$1
-	n=0
-	mac_addr=$(echo ${addr} | while read -r -n2 c; do 
-		if [ ! -z "$c" ]; then
-			if [ $n -ne 0 ] ; then
-				echo -n ":${c}"
-			else
-				echo -n "${c}"
-			fi
-		fi
-		n=$(($n+1))
-	done)
-	echo ${mac_addr}
-}
-
-reverse_bytes()
-{
-	addr=$1
-	New_addr=$(echo ${addr} | while read -r -n2 c; do 
-		if [ ! -z "$c" ]; then
-			New_addr=${c}${New_addr}
-		else echo
-			echo ${New_addr}
-		fi
-	done)
-	echo ${New_addr}
-}
-
-#DEVMEM_ADDR_LO=$(get_devmem 0x44e10638|bc)
-#DEVMEM_ADDR_LO=$(reverse_bytes ${DEVMEM_ADDR_LO})
-
-#DEVMEM_ADDR_HI=$(get_devmem 0x44e1063C)
-#DEVMEM_ADDR_HI=$(reverse_bytes ${DEVMEM_ADDR_HI})
-
-#DEV_ADDR=$(hex_to_mac_addr "${DEVMEM_ADDR_HI}${DEVMEM_ADDR_LO}")
-
 SERIAL_NUMBER=$(hexdump -e '8/1 "%c"' /sys/bus/i2c/devices/0-0050/eeprom -s 14 -n 2)-$(hexdump -e '8/1 "%c"' /sys/bus/i2c/devices/0-0050/eeprom -s 16 -n 12)
 ISBLACK=$(hexdump -e '8/1 "%c"' /sys/bus/i2c/devices/0-0050/eeprom -s 8 -n 4-s 8 -n 4)
 
@@ -59,19 +16,19 @@ if [ "${ISBLACK}" = "BNLT" ] ; then
 	BLACK="Black"
 fi
 
-if [ ! "${DEV_ADDR}" ] ; then
-	cpsw_1=$(cat /proc/device-tree/ocp/ethernet@4a100000/slave@4a100300/mac-address)
-	DEV_ADDR=$(hex_to_mac_addr "${cpsw_1}")
-	echo "DEV_ADDR: ${DEV_ADDR}"
-
-	#Just a temp hack:
-	DEV_ADDR=$(dmesg | grep cpsw.1 | awk '{print $9}')
-	#till i get this working...
-	#hexdump -e '8/1 "%c"' /proc/device-tree/ocp/ethernet@4a100000/slave@4a100300/mac-address -s 8 -n 4-s 8 -n 4
-	echo "DEV_ADDR: ${DEV_ADDR}"
+mac_address="/proc/device-tree/ocp/ethernet@4a100000/slave@4a100200/mac-address"
+if [ -f ${mac_address} ] then
+	cpsw_0_mac=$(hexdump -v -e '1/1 "%02X" ":"' ${mac_address} | sed 's/.$//')
+	echo "cpsw.0: ${cpsw_0_mac}"
 fi
 
-modprobe g_multi file=/dev/mmcblk0p1 cdrom=0 stall=0 removable=1 nofua=1 iSerialNumber=${SERIAL_NUMBER} iManufacturer=Circuitco  iProduct=BeagleBone${BLACK} host_addr=${DEV_ADDR}
+mac_address="/proc/device-tree/ocp/ethernet@4a100000/slave@4a100300/mac-address"
+if [ -f ${mac_address} ] then
+	cpsw_1_mac=$(hexdump -v -e '1/1 "%02X" ":"' ${mac_address} | sed 's/.$//')
+	echo "cpsw.1: ${cpsw_1_mac}"
+fi
+
+modprobe g_multi file=/dev/mmcblk0p1 cdrom=0 stall=0 removable=1 nofua=1 iSerialNumber=${SERIAL_NUMBER} iManufacturer=Circuitco  iProduct=BeagleBone${BLACK} host_addr=${cpsw_1_mac}
 
 sleep 1
 
