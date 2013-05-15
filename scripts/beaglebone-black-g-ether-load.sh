@@ -3,12 +3,12 @@
 #Based off:
 #https://github.com/beagleboard/meta-beagleboard/blob/master/meta-beagleboard-extras/recipes-support/usb-gadget/gadget-init/g-ether-load.sh
 
-function get_devmem()
+get_devmem() 
 {
 	/usr/bin/devmem2 $1 | grep ": " | cut -d ":" -f 2|cut -d "x" -f 2
 }
 
-function hex_to_mac_addr()
+hex_to_mac_addr()
 {
 	addr=$1
 	n=0
@@ -25,7 +25,7 @@ function hex_to_mac_addr()
 	echo ${mac_addr}
 }
 
-function reverse_bytes()
+reverse_bytes()
 {
 	addr=$1
 	New_addr=$(echo ${addr} | while read -r -n2 c; do 
