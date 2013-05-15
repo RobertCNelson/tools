@@ -82,4 +82,4 @@ if [ ! -f /etc/udhcpd.conf ] ; then
 fi
 
 /sbin/ifconfig usb0 192.168.7.2 netmask 255.255.255.252
-/usr/sbin/udhcpd -f -S /etc/udhcpd.conf
+/usr/sbin/udhcpd -S /etc/udhcpd.conf
