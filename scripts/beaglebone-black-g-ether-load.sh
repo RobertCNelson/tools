@@ -47,6 +47,7 @@ if [ ! -f /etc/udhcpd.conf ] ; then
 	echo "max_leases 1" >> /etc/udhcpd.conf
 	echo "option subnet 255.255.255.252" >> /etc/udhcpd.conf
 fi
+/etc/init.d/udhcpd restart
 
 /sbin/ifconfig usb0 192.168.7.2 netmask 255.255.255.252
 /usr/sbin/udhcpd -S /etc/udhcpd.conf

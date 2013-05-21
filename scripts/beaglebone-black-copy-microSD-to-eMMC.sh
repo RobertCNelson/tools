@@ -157,7 +157,7 @@ copy_boot () {
 	cp -v /boot/uboot/u-boot.img /tmp/boot/u-boot.img
 	sync
 
-	rsync -aAXv /boot/uboot/ /tmp/boot/ --exclude={MLO,u-boot.img,*bak}
+	rsync -aAXv /boot/uboot/ /tmp/boot/ --exclude={MLO,u-boot.img,*bak,flash-eMMC.txt}
 	sync
 
 	unset root_uuid
