@@ -16,7 +16,8 @@ if [ "${deb_pkgs}" ] ; then
 	sudo apt-get -y install ${deb_pkgs}
 fi
 
-git_sha="origin/master"
+#git_sha="origin/master"
+git_sha="27cdc1b16f86f970c3c049795d4e71ad531cca3d"
 project="dtc"
 server="git://git.jdl.com/software"
 
@@ -36,6 +37,7 @@ git checkout master -f
 git pull || true
 git branch ${git_sha}-build -D || true
 git checkout ${git_sha} -b ${git_sha}-build
+git pull git://github.com/RobertCNelson/dtc.git dtc-fixup
 
 make clean
 make PREFIX=/usr/local/ CROSS_COMPILE= all
