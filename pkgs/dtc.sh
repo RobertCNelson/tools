@@ -17,7 +17,8 @@ if [ "${deb_pkgs}" ] ; then
 fi
 
 #git_sha="origin/master"
-git_sha="27cdc1b16f86f970c3c049795d4e71ad531cca3d"
+#git_sha="27cdc1b16f86f970c3c049795d4e71ad531cca3d"
+git_sha="fdc7387845420168ee5dd479fbe4391ff93bddab"
 project="dtc"
 server="git://git.jdl.com/software"
 
@@ -37,7 +38,7 @@ git checkout master -f
 git pull || true
 git branch ${git_sha}-build -D || true
 git checkout ${git_sha} -b ${git_sha}-build
-git pull git://github.com/RobertCNelson/dtc.git dtc-fixup
+git pull git://github.com/RobertCNelson/dtc.git dtc-fixup-fdc7387
 
 make clean
 make PREFIX=/usr/local/ CROSS_COMPILE= all
