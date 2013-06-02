@@ -8,7 +8,9 @@ network_down () {
 ping -c1 www.google.com | grep ttl > /dev/null 2>&1 || network_down
 
 unset deb_pkgs
-dpkg -l | grep build-essential >/dev/null || deb_pkgs="build-essential "
+dpkg -l | grep bison >/dev/null || deb_pkgs="${deb_pkgs}bison "
+dpkg -l | grep build-essential >/dev/null || deb_pkgs="${deb_pkgs}build-essential "
+dpkg -l | grep flex >/dev/null || deb_pkgs="${deb_pkgs}flex "
 
 if [ "${deb_pkgs}" ] ; then
 	echo "Installing: ${deb_pkgs}"
