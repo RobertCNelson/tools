@@ -43,6 +43,6 @@ git checkout ${git_sha} -b ${git_sha}-build
 git pull git://github.com/RobertCNelson/dtc.git dtc-fixup-fdc7387
 
 make clean
-make PREFIX=/usr/local/ CROSS_COMPILE= all
+make PREFIX=/usr/local/ CC=gcc CROSS_COMPILE= all
 echo "Installing into: /usr/local/bin/"
 sudo make PREFIX=/usr/local/ install
