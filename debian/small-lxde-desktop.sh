@@ -16,3 +16,11 @@ sudo apt-get -y upgrade
 
 #Wheezy: 281 pkgs, 94.9MB, 280MB
 sudo apt-get -y install lightdm lxde-core
+
+#We know the user/password...
+if [ -f /etc/rcn-ee.conf ] ; then
+	username=$(echo ${USER})
+	if [ "x${username}" != "xroot" ] ; then
+		sudo /usr/lib/arm-linux-gnueabihf/lightdm/lightdm-set-defaults --autologin ${username}
+	fi
+fi
