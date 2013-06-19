@@ -95,6 +95,19 @@ format_root () {
 	sync
 }
 
+repartition_emmc_sfdisk () {
+	dd if=/dev/zero of=${DISK} bs=1024 count=1024
+	#64Mb
+	LC_ALL=C sfdisk --DOS --sectors 63 --heads 255 --unit M "${MMC}" <<-__EOF__
+		,64,0xe,*
+		,,,-
+	__EOF__
+
+	sync
+	format_boot
+	format_root
+}
+
 repartition_emmc () {
 	dd if=/dev/zero of=${DISK} bs=1024 count=1024
 	parted --script ${DISK} mklabel msdos
