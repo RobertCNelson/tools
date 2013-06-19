@@ -94,7 +94,7 @@ mount_n_check () {
 	umount ${destination}p1 || true
 	umount ${destination}p2 || true
 
-	lsblk | grep mmcblk1p1 >/dev/null 2<&1 || repartition_emmc
+	lsblk | grep ${destination}p1 >/dev/null 2<&1 || repartition_emmc
 	mkdir -p /tmp/boot/ || true
 	if mount -t vfat ${destination}p1 /tmp/boot/ ; then
 		if [ -f /tmp/boot/MLO ] ; then
@@ -126,6 +126,10 @@ copy_boot () {
 	if [ "${root_uuid}" ] ; then
 		root_uuid="UUID=${root_uuid}"
 		device_id=$(cat /tmp/boot/uEnv.txt | grep mmcroot | grep mmcblk | awk '{print $1}' | awk -F '=' '{print $2}')
+		if [ ! "${device_id}" ] ; then
+			device_id=$(cat /tmp/boot/uEnv.txt | grep mmcroot | grep UUID | awk '{print $1}' | awk -F '=' '{print $3}')
+			device_id="UUID=${device_id}"
+		fi
 		sed -i -e 's:'${device_id}':'${root_uuid}':g' /tmp/boot/uEnv.txt
 	else
 		root_uuid="${source}p2"
