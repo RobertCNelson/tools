@@ -25,8 +25,8 @@ if ! id | grep -q root; then
 	exit
 fi
 
-source="/dev/mmcblk0"
-destination="/dev/mmcblk1"
+source="/dev/mmcblk1"
+destination="/dev/mmcblk0"
 
 network_down () {
 	echo "Network Down"
