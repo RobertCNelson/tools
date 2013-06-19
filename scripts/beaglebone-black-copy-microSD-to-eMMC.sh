@@ -43,7 +43,6 @@ check_running_system () {
 check_host_pkgs () {
 	unset deb_pkgs
 	dpkg -l | grep dosfstools >/dev/null || deb_pkgs="${deb_pkgs}dosfstools "
-	dpkg -l | grep parted >/dev/null || deb_pkgs="${deb_pkgs}parted "
 	dpkg -l | grep rsync >/dev/null || deb_pkgs="${deb_pkgs}rsync "
 	#ignoring Squeeze or Lucid: uboot-mkimage
 	dpkg -l | grep u-boot-tools >/dev/null || deb_pkgs="${deb_pkgs}u-boot-tools"
@@ -95,9 +94,9 @@ format_root () {
 	sync
 }
 
-repartition_emmc_sfdisk () {
+repartition_emmc () {
 	dd if=/dev/zero of=${DISK} bs=1M count=16
-	#64Mb
+	#64Mb fat formatted boot partition
 	LC_ALL=C sfdisk --force --DOS --sectors 63 --heads 255 --unit M "${DISK}" <<-__EOF__
 		,64,0xe,*
 		,,,-
@@ -105,39 +104,6 @@ repartition_emmc_sfdisk () {
 
 	sync
 	format_boot
-	format_root
-}
-
-repartition_emmc () {
-	dd if=/dev/zero of=${DISK} bs=1M count=16
-	parted --script ${DISK} mklabel msdos
-	sync
-
-	fdisk ${DISK} <<-__EOF__
-	n
-	p
-	1
-	 
-	+64M
-	t
-	e
-	p
-	w
-	__EOF__
-	sync
-
-	format_boot
-
-	fdisk ${DISK} <<-__EOF__
-	n
-	p
-	2
-	 
-	 
-	w
-	__EOF__
-	sync
-
 	format_root
 }
 

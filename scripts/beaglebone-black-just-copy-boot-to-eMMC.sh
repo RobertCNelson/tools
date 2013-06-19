@@ -43,7 +43,6 @@ check_running_system () {
 check_host_pkgs () {
 	unset deb_pkgs
 	dpkg -l | grep dosfstools >/dev/null || deb_pkgs="${deb_pkgs}dosfstools "
-	dpkg -l | grep parted >/dev/null || deb_pkgs="${deb_pkgs}parted "
 	dpkg -l | grep rsync >/dev/null || deb_pkgs="${deb_pkgs}rsync "
 	#ignoring Squeeze or Lucid: uboot-mkimage
 	dpkg -l | grep u-boot-tools >/dev/null || deb_pkgs="${deb_pkgs}u-boot-tools"
