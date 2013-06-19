@@ -98,7 +98,7 @@ format_root () {
 repartition_emmc_sfdisk () {
 	dd if=/dev/zero of=${DISK} bs=1024 count=1024
 	#64Mb
-	LC_ALL=C sfdisk --DOS --sectors 63 --heads 255 --unit M "${MMC}" <<-__EOF__
+	LC_ALL=C sfdisk --DOS --sectors 63 --heads 255 --unit M "${DISK}" <<-__EOF__
 		,64,0xe,*
 		,,,-
 	__EOF__
