@@ -25,7 +25,8 @@ if ! id | grep -q root; then
 	exit
 fi
 
-DISK=/dev/mmcblk1
+source="/dev/mmcblk0"
+destination="/dev/mmcblk1"
 
 network_down () {
 	echo "Network Down"
@@ -35,7 +36,7 @@ network_down () {
 check_running_system () {
 	if [ ! -f /boot/uboot/uEnv.txt ] ; then
 		echo "Error: script halting, system unrecognized..."
-		echo "unable to find: [/boot/uboot/uEnv.txt] is /dev/mmcblk0p1 mounted?"
+		echo "unable to find: [/boot/uboot/uEnv.txt] is ${source}p1 mounted?"
 		exit 1
 	fi
 }
@@ -74,7 +75,7 @@ update_boot_files () {
 }
 
 fdisk_toggle_boot () {
-	fdisk ${DISK} <<-__EOF__
+	fdisk ${destination} <<-__EOF__
 	a
 	1
 	w
@@ -83,21 +84,21 @@ fdisk_toggle_boot () {
 }
 
 format_boot () {
-	LC_ALL=C fdisk -l ${DISK} | grep ${DISK}p1 | grep '*' || fdisk_toggle_boot
+	LC_ALL=C fdisk -l ${destination} | grep ${destination}p1 | grep '*' || fdisk_toggle_boot
 
-	mkfs.vfat -F 16 ${DISK}p1 -n boot
+	mkfs.vfat -F 16 ${destination}p1 -n boot
 	sync
 }
 
 format_root () {
-	mkfs.ext4 ${DISK}p2 -L rootfs
+	mkfs.ext4 ${destination}p2 -L rootfs
 	sync
 }
 
 repartition_emmc () {
-	dd if=/dev/zero of=${DISK} bs=1M count=16
+	dd if=/dev/zero of=${destination} bs=1M count=16
 	#64Mb fat formatted boot partition
-	LC_ALL=C sfdisk --force --DOS --sectors 63 --heads 255 --unit M "${DISK}" <<-__EOF__
+	LC_ALL=C sfdisk --force --DOS --sectors 63 --heads 255 --unit M "${destination}" <<-__EOF__
 		,64,0xe,*
 		,,,-
 	__EOF__
@@ -108,18 +109,18 @@ repartition_emmc () {
 }
 
 mount_n_check () {
-	umount ${DISK}p1 || true
-	umount ${DISK}p2 || true
+	umount ${destination}p1 || true
+	umount ${destination}p2 || true
 
 	lsblk | grep mmcblk1p1 >/dev/null 2<&1 || repartition_emmc
 	mkdir -p /tmp/boot/ || true
-	if mount -t vfat ${DISK}p1 /tmp/boot/ ; then
+	if mount -t vfat ${destination}p1 /tmp/boot/ ; then
 		if [ -f /tmp/boot/MLO ] ; then
-			umount ${DISK}p1 || true
+			umount ${destination}p1 || true
 			format_boot
 			format_root
 		else
-			umount ${DISK}p1 || true
+			umount ${destination}p1 || true
 			repartition_emmc
 		fi
 	else
@@ -129,7 +130,7 @@ mount_n_check () {
 
 copy_boot () {
 	mkdir -p /tmp/boot/ || true
-	mount ${DISK}p1 /tmp/boot/
+	mount ${destination}p1 /tmp/boot/
 	#Make sure the BootLoader gets copied first:
 	cp -v /boot/uboot/MLO /tmp/boot/MLO
 	sync
@@ -140,22 +141,22 @@ copy_boot () {
 	sync
 
 	unset root_uuid
-	root_uuid=$(/sbin/blkid -s UUID -o value /dev/mmcblk1p2)
+	root_uuid=$(/sbin/blkid -s UUID -o value ${destination}p2)
 	if [ "${root_uuid}" ] ; then
 		root_uuid="UUID=${root_uuid}"
 		device_id=$(cat /tmp/boot/uEnv.txt | grep mmcroot | grep mmcblk | awk '{print $1}' | awk -F '=' '{print $2}')
 		sed -i -e 's:'${device_id}':'${root_uuid}':g' /tmp/boot/uEnv.txt
 	else
-		root_uuid="/dev/mmcblk0p2"
+		root_uuid="${source}p2"
 	fi
 	sync
 
-	umount ${DISK}p1 || true
+	umount ${destination}p1 || true
 }
 
 copy_rootfs () {
 	mkdir -p /tmp/rootfs/ || true
-	mount ${DISK}p2 /tmp/rootfs/
+	mount ${destination}p2 /tmp/rootfs/
 	rsync -aAXv /* /tmp/rootfs/ --exclude={/dev/*,/proc/*,/sys/*,/tmp/*,/run/*,/mnt/*,/media/*,/lost+found,/boot/*,/lib/modules/*}
 	mkdir -p /tmp/rootfs/boot/uboot/ || true
 	mkdir -p /tmp/rootfs/lib/modules/`uname -r` || true
@@ -163,15 +164,15 @@ copy_rootfs () {
 	sync
 
 	unset boot_uuid
-	boot_uuid=$(/sbin/blkid -s UUID -o value /dev/mmcblk1p1)
+	boot_uuid=$(/sbin/blkid -s UUID -o value ${destination}p1)
 	if [ "${boot_uuid}" ] ; then
 		boot_uuid="UUID=${boot_uuid}"
 	else
-		boot_uuid="/dev/mmcblk0p1"
+		boot_uuid="${source}p1"
 	fi
 
 	unset root_filesystem
-	root_filesystem=$(mount | grep /dev/mmcblk0p2 | awk '{print $5}')
+	root_filesystem=$(mount | grep ${source}p2 | awk '{print $5}')
 	if [ ! "${root_filesystem}" ] ; then
 		root_filesystem=$(mount | grep "${root_uuid}" | awk '{print $5}')
 	fi
@@ -187,7 +188,7 @@ copy_rootfs () {
 	echo "${boot_uuid}  /boot/uboot  auto  defaults  0  0" >> /tmp/rootfs/etc/fstab
 	sync
 
-	umount ${DISK}p2 || true
+	umount ${destination}p2 || true
 	echo ""
 	echo "This script has now completed it's task"
 	echo "-----------------------------"
