@@ -12,7 +12,7 @@ if [ $(uname -m) != "armv7l" ] ; then
 	echo "Warning, this is only half implemented to make it work on x86..."
 	echo "mount your mmc drive to /tmp/uboot/"
 	DRIVE="/tmp/uboot"
-	sudo mkdir -p ${DRIVE}
+	sudo mkdir -p ${DRIVE} || true
 fi
 
 if [ -f ${DRIVE}/uImage_bak ] ; then
@@ -33,6 +33,11 @@ fi
 if [ -f ${DRIVE}/initrd.bak ] ; then
 	rm -rf ${DRIVE}/initrd.img || true
 	mv -v ${DRIVE}/initrd.bak ${DRIVE}/initrd.img
+fi
+
+if [ -d ${DRIVE}/dtbs_bak/ ] ; then
+	rm -rf ${DRIVE}/dtbs/ || true
+	mv ${DRIVE}/dtbs_bak/ ${DRIVE}/dtbs/
 fi
 
 if [ $(uname -m) != "armv7l" ] ; then
