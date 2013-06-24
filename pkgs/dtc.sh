@@ -11,6 +11,7 @@ unset deb_pkgs
 dpkg -l | grep bison >/dev/null || deb_pkgs="${deb_pkgs}bison "
 dpkg -l | grep build-essential >/dev/null || deb_pkgs="${deb_pkgs}build-essential "
 dpkg -l | grep flex >/dev/null || deb_pkgs="${deb_pkgs}flex "
+dpkg -l | grep git-core >/dev/null || deb_pkgs="${deb_pkgs}git-core "
 
 if [ "${deb_pkgs}" ] ; then
 	echo "Installing: ${deb_pkgs}"
