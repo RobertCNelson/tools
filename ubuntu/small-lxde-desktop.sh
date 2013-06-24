@@ -10,11 +10,11 @@ sudo apt-get -y upgrade
 sudo apt-get -y install lxde-core slim xserver-xorg-video-modesetting xserver-xorg
 
 if [ "x${USER}" != "xroot" ] ; then
-	echo "#!/bin/sh" > ${USER}/.xinitrc
-	echo "" >> ${USER}/.xinitrc
-	echo "exec startlxde" >> ${USER}/.xinitrc
+	echo "#!/bin/sh" > ${HOME}/.xinitrc
+	echo "" >> ${HOME}/.xinitrc
+	echo "exec startlxde" >> ${HOME}/.xinitrc
 
-	chmod +x ${USER}/.xinitrc
+	chmod +x ${HOME}/.xinitrc
 
 	#/etc/slim.conf modfications:
 	sudo sed -i -e 's:default,start:startlxde,default,start:g' /etc/slim.conf
