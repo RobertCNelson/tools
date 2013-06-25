@@ -7,7 +7,11 @@ sudo apt-get -y upgrade
 #sudo apt-get -y install lightdm lxde-core
 
 #Ubuntu Raring:
-sudo apt-get -y install lxde-core slim xserver-xorg-video-modesetting xserver-xorg
+sudo apt-get -y install lxde-core slim xserver-xorg-video-modesetting xserver-xorg dmz-cursor-theme
+
+sudo update-alternatives --config x-cursor-theme <<-__EOF__
+1
+__EOF__
 
 if [ "x${USER}" != "xroot" ] ; then
 	echo "#!/bin/sh" > ${HOME}/.xinitrc
