@@ -3,7 +3,7 @@
 sudo apt-get update
 sudo apt-get -y upgrade
 
-#Ubuntu Raring:
+#Ubuntu Raring: 240 pkgs, 62.2 MB dl, 183 MB of space
 sudo apt-get -y install lxde-core slim xserver-xorg-video-modesetting xserver-xorg x11-xserver-utils
 sudo apt-get clean
 
@@ -21,7 +21,7 @@ if [ "x${USER}" != "xroot" ] ; then
 	echo "auto_login	yes" | sudo tee -a /etc/slim.conf >/dev/null
 fi
 
-#Ubuntu Raring: 244 pkgs, 61.6MB dl, 183MB of space
+#Ubuntu Raring: 244 pkgs, 61.6 MB dl, 183 MB of space
 #sudo apt-get -y install lxde-core lxdm xserver-xorg-video-modesetting xserver-xorg x11-xserver-utils
 #sudo apt-get clean
 ##lxdm
