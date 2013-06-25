@@ -8,6 +8,7 @@ sudo apt-get -y upgrade
 
 #Ubuntu Raring:
 sudo apt-get -y install lxde-core slim xserver-xorg-video-modesetting xserver-xorg x11-xserver-utils dmz-cursor-theme
+sudo apt-get clean
 
 #Fixme: doesnt stay active...
 #sudo update-alternatives --config x-cursor-theme <<-__EOF__
@@ -26,5 +27,40 @@ if [ "x${USER}" != "xroot" ] ; then
 	echo "default_user	${USER}" | sudo tee -a /etc/slim.conf >/dev/null
 	echo "auto_login	yes" | sudo tee -a /etc/slim.conf >/dev/null
 fi
+
+cat > /tmp/xorg.conf <<-__EOF__
+	Section "Module"
+	        Load            "extmod"
+	        Load            "dbe"
+	        Load            "glx"
+	        Load            "freetype"
+	        Load            "type1"
+	        Load            "record"
+	        Load            "dri"
+	EndSection
+
+	Section "Monitor"
+	        Identifier      "Builtin Default Monitor"
+	EndSection
+
+	Section "Device"
+	        Identifier      "Builtin Default fbdev Device 0"
+	        Driver          "modesetting"
+	EndSection
+
+	Section "Screen"
+	        Identifier      "Builtin Default fbdev Screen 0"
+	        Device          "Builtin Default fbdev Device 0"
+	        Monitor         "Builtin Default Monitor"
+	        DefaultDepth    16
+	EndSection
+
+	Section "ServerLayout"
+	        Identifier      "Builtin Default Layout"
+	        Screen          "Builtin Default fbdev Screen 0"
+	EndSection
+__EOF__
+
+sudo cp -v /tmp/xorg.conf /etc/X11/xorg.conf
 
 echo "Please Reboot"
