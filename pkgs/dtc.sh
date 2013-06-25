@@ -5,19 +5,20 @@ network_down () {
 	exit
 }
 
-ping -c1 www.google.com | grep ttl > /dev/null 2>&1 || network_down
-
 unset deb_pkgs
 dpkg -l | grep bison >/dev/null || deb_pkgs="${deb_pkgs}bison "
 dpkg -l | grep build-essential >/dev/null || deb_pkgs="${deb_pkgs}build-essential "
 dpkg -l | grep flex >/dev/null || deb_pkgs="${deb_pkgs}flex "
 dpkg -l | grep git-core >/dev/null || deb_pkgs="${deb_pkgs}git-core "
+dpkg -l | grep iputils-ping >/dev/null || deb_pkgs="${deb_pkgs}iputils-ping "
 
 if [ "${deb_pkgs}" ] ; then
 	echo "Installing: ${deb_pkgs}"
 	sudo apt-get update
 	sudo apt-get -y install ${deb_pkgs}
 fi
+
+ping -c1 www.google.com | grep ttl > /dev/null 2>&1 || network_down
 
 #git_sha="origin/master"
 #git_sha="27cdc1b16f86f970c3c049795d4e71ad531cca3d"
