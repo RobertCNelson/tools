@@ -3,18 +3,11 @@
 sudo apt-get update
 sudo apt-get -y upgrade
 
-#Wheezy: 281 pkgs, 94.9MB, 280MB
-#sudo apt-get -y install lightdm lxde-core
-
 #Ubuntu Raring:
-sudo apt-get -y install lxde-core slim xserver-xorg-video-modesetting xserver-xorg x11-xserver-utils dmz-cursor-theme
+sudo apt-get -y install lxde-core slim xserver-xorg-video-modesetting xserver-xorg x11-xserver-utils
 sudo apt-get clean
 
-#Fixme: doesnt stay active...
-#sudo update-alternatives --config x-cursor-theme <<-__EOF__
-#1
-#__EOF__
-
+#slim
 if [ "x${USER}" != "xroot" ] ; then
 	echo "#!/bin/sh" > ${HOME}/.xinitrc
 	echo "" >> ${HOME}/.xinitrc
@@ -27,6 +20,19 @@ if [ "x${USER}" != "xroot" ] ; then
 	echo "default_user	${USER}" | sudo tee -a /etc/slim.conf >/dev/null
 	echo "auto_login	yes" | sudo tee -a /etc/slim.conf >/dev/null
 fi
+
+#Ubuntu Raring: 244 pkgs, 61.6MB dl, 183MB of space
+#sudo apt-get -y install lxde-core lxdm xserver-xorg-video-modesetting xserver-xorg x11-xserver-utils
+#sudo apt-get clean
+##lxdm
+#sudo sed -i -e 's:# session=/usr/bin/startlxde:session=/usr/bin/startlxde:g' /etc/lxdm/lxdm.conf
+#if [ "x${USER}" != "xroot" ] ; then
+#	username=$(echo ${USER})
+#	sudo sed -i -e 's:# autologin=dgod:autologin='${username}':g' /etc/lxdm/lxdm.conf
+#else
+#	echo "To enable autologin:"
+#	echo "change: [# autologin=dgod] in /etc/lxdm/lxdm.conf to [autologin=username]"
+#fi
 
 cat > /tmp/xorg.conf <<-__EOF__
 	Section "Monitor"
