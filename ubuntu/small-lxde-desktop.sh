@@ -29,16 +29,6 @@ if [ "x${USER}" != "xroot" ] ; then
 fi
 
 cat > /tmp/xorg.conf <<-__EOF__
-	Section "Module"
-	        Load            "extmod"
-	        Load            "dbe"
-	        Load            "glx"
-	        Load            "freetype"
-	        Load            "type1"
-	        Load            "record"
-	        Load            "dri"
-	EndSection
-
 	Section "Monitor"
 	        Identifier      "Builtin Default Monitor"
 	EndSection
