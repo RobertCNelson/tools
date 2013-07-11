@@ -101,8 +101,8 @@ format_root () {
 repartition_emmc () {
 	dd if=/dev/zero of=${destination} bs=1M count=16
 	#64Mb fat formatted boot partition
-	LC_ALL=C sfdisk --force --DOS --sectors 63 --heads 255 --unit M "${destination}" <<-__EOF__
-		,64,0xe,*
+	LC_ALL=C sfdisk --force --in-order --Linux --unit M "${destination}" <<-__EOF__
+		1,64,0xe,*
 		,,,-
 	__EOF__
 
