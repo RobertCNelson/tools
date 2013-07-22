@@ -199,6 +199,14 @@ copy_rootfs () {
 	sync
 
 	umount ${destination}p2 || true
+
+	if [ -e /sys/class/leds/beaglebone\:green\:usr0/trigger ] ; then
+		echo default-on > /sys/class/leds/beaglebone\:green\:usr0/trigger
+		echo default-on > /sys/class/leds/beaglebone\:green\:usr1/trigger
+		echo default-on > /sys/class/leds/beaglebone\:green\:usr2/trigger
+		echo default-on > /sys/class/leds/beaglebone\:green\:usr3/trigger
+	fi
+
 	echo ""
 	echo "This script has now completed it's task"
 	echo "-----------------------------"
