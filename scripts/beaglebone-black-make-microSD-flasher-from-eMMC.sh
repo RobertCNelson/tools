@@ -98,8 +98,13 @@ format_root () {
 	sync
 }
 
-repartition_emmc () {
+partition_drive () {
+	umount ${destination}p1 || true
+	umount ${destination}p2 || true
+
 	dd if=/dev/zero of=${destination} bs=1M count=16
+	sync
+	
 	#64Mb fat formatted boot partition
 	LC_ALL=C sfdisk --force --in-order --Linux --unit M "${destination}" <<-__EOF__
 		1,64,0xe,*
@@ -109,26 +114,6 @@ repartition_emmc () {
 	sync
 	format_boot
 	format_root
-}
-
-mount_n_check () {
-	umount ${destination}p1 || true
-	umount ${destination}p2 || true
-
-	lsblk | grep ${destination}p1 >/dev/null 2<&1 || repartition_emmc
-	mkdir -p /tmp/boot/ || true
-	if mount -t vfat ${destination}p1 /tmp/boot/ ; then
-		if [ -f /tmp/boot/MLO ] ; then
-			umount ${destination}p1 || true
-			format_boot
-			format_root
-		else
-			umount ${destination}p1 || true
-			repartition_emmc
-		fi
-	else
-		repartition_emmc
-	fi
 }
 
 copy_boot () {
@@ -225,6 +210,6 @@ copy_rootfs () {
 check_running_system
 check_host_pkgs
 update_boot_files
-mount_n_check
+partition_drive
 copy_boot
 copy_rootfs
