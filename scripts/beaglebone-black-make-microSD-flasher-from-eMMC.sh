@@ -143,12 +143,12 @@ copy_boot () {
 	rsync -aAXv /boot/uboot/ /tmp/boot/ --exclude={MLO,u-boot.img,*bak,flash-eMMC.txt}
 	sync
 
-	if [ -f /tmp/boot/uboot/SOC.sh ] ; then
+	if [ -f /tmp/boot/SOC.sh ] ; then
 		#enable: boot scripts:
-		touch /tmp/boot/uboot/run_boot-scripts
+		touch /tmp/boot/run_boot-scripts
 
 		#enable: Flasher script:
-		touch /tmp/boot/uboot/flash-eMMC.txt
+		touch /tmp/boot/flash-eMMC.txt
 	fi
 
 	unset root_uuid
