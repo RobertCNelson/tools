@@ -22,7 +22,8 @@ ping -c1 www.google.com | grep ttl > /dev/null 2>&1 || network_down
 
 #git_sha="origin/master"
 #git_sha="27cdc1b16f86f970c3c049795d4e71ad531cca3d"
-git_sha="fdc7387845420168ee5dd479fbe4391ff93bddab"
+#git_sha="fdc7387845420168ee5dd479fbe4391ff93bddab"
+git_sha="65cc4d2748a2c2e6f27f1cf39e07a5dbabd80ebf"
 project="dtc"
 server="git://git.jdl.com/software"
 
@@ -42,7 +43,7 @@ git checkout master -f
 git pull || true
 git branch ${git_sha}-build -D || true
 git checkout ${git_sha} -b ${git_sha}-build
-git pull git://github.com/RobertCNelson/dtc.git dtc-fixup-fdc7387
+git pull git://github.com/RobertCNelson/dtc.git dtc-fixup-65cc4d2
 
 make clean
 make PREFIX=/usr/local/ CC=gcc CROSS_COMPILE= all
