@@ -39,6 +39,11 @@ check_running_system () {
 		echo "unable to find: [/boot/uboot/uEnv.txt] is ${source}p1 mounted?"
 		exit 1
 	fi
+
+	echo "-----------------------------"
+	echo "debug copying: [${source}] -> [${destination}]"
+	lsblk
+	echo "-----------------------------"
 }
 
 check_host_pkgs () {
