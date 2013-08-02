@@ -5,12 +5,21 @@ network_down () {
 	exit
 }
 
+check_dpkg () {
+	LC_ALL=C dpkg --list | awk '{print $2}' | grep "^${pkg}" >/dev/null || deb_pkgs="${deb_pkgs}${pkg} "
+}
+
 unset deb_pkgs
-dpkg -l | grep bison >/dev/null || deb_pkgs="${deb_pkgs}bison "
-dpkg -l | grep build-essential >/dev/null || deb_pkgs="${deb_pkgs}build-essential "
-dpkg -l | grep flex >/dev/null || deb_pkgs="${deb_pkgs}flex "
-dpkg -l | grep git-core >/dev/null || deb_pkgs="${deb_pkgs}git-core "
-dpkg -l | grep iputils-ping >/dev/null || deb_pkgs="${deb_pkgs}iputils-ping "
+pkg="bison"
+check_dpkg
+pkg="build-essential"
+check_dpkg
+pkg="flex"
+check_dpkg
+pkg="git-core"
+check_dpkg
+pkg="iputils-ping"
+check_dpkg
 
 if [ "${deb_pkgs}" ] ; then
 	echo "Installing: ${deb_pkgs}"
