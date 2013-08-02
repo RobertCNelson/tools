@@ -41,7 +41,12 @@ cd ${HOME}/git/${project}/
 make clean
 git checkout master -f
 git pull || true
-git branch ${git_sha}-build -D || true
+
+test_for_branch=$(git branch --list ${git_sha}-build)
+if [ "x${test_for_branch}" != "x" ] ; then
+	git branch ${git_sha}-build -D
+fi
+
 git checkout ${git_sha} -b ${git_sha}-build
 git pull git://github.com/RobertCNelson/dtc.git dtc-fixup-65cc4d2
 
