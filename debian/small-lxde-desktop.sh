@@ -3,9 +3,27 @@
 sudo apt-get update
 sudo apt-get -y upgrade
 
-#Debian Wheezy: 288pkg, 100Mb dl, 289Mb of space
-sudo apt-get -y install lightdm lxde-core x11-xserver-utils xserver-xorg-video-modesetting
-sudo apt-get clean
+check_dpkg () {
+	LC_ALL=C dpkg --list | awk '{print $2}' | grep "^${pkg}" >/dev/null || deb_pkgs="${deb_pkgs}${pkg} "
+}
+
+unset deb_pkgs
+pkg="lightdm"
+check_dpkg
+pkg="lxde-core"
+check_dpkg
+pkg="x11-xserver-utils"
+check_dpkg
+pkg="xserver-xorg-video-modesetting"
+check_dpkg
+
+if [ "${deb_pkgs}" ] ; then
+	echo ""
+	echo "Installing: ${deb_pkgs}"
+	sudo apt-get -y install ${deb_pkgs}
+	sudo apt-get clean
+	echo "--------------------"
+fi
 
 if [ "x${USER}" != "xroot" ] ; then
 	sudo /usr/lib/arm-linux-gnueabihf/lightdm/lightdm-set-defaults --autologin ${USER}

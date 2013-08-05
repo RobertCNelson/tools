@@ -3,9 +3,29 @@
 sudo apt-get update
 sudo apt-get -y upgrade
 
-#Ubuntu Raring: 240 pkgs, 62.2 MB dl, 183 MB of space
-sudo apt-get -y install lxde-core slim xserver-xorg-video-modesetting xserver-xorg x11-xserver-utils
-sudo apt-get clean
+check_dpkg () {
+	LC_ALL=C dpkg --list | awk '{print $2}' | grep "^${pkg}" >/dev/null || deb_pkgs="${deb_pkgs}${pkg} "
+}
+
+unset deb_pkgs
+pkg="lxde-core"
+check_dpkg
+pkg="slim"
+check_dpkg
+pkg="xserver-xorg-video-modesetting"
+check_dpkg
+pkg="xserver-xorg"
+check_dpkg
+pkg="x11-xserver-utils"
+check_dpkg
+
+if [ "${deb_pkgs}" ] ; then
+	echo ""
+	echo "Installing: ${deb_pkgs}"
+	sudo apt-get -y install ${deb_pkgs}
+	sudo apt-get clean
+	echo "--------------------"
+fi
 
 #slim
 if [ "x${USER}" != "xroot" ] ; then
