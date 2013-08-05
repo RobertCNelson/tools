@@ -1,5 +1,7 @@
 #!/bin/sh -e
 
+board=$(cat /proc/cpuinfo | grep "^Hardware" | awk '{print $4}')
+
 sudo apt-get update
 sudo apt-get -y upgrade
 
@@ -14,8 +16,10 @@ pkg="lxde-core"
 check_dpkg
 pkg="x11-xserver-utils"
 check_dpkg
-pkg="xserver-xorg-video-modesetting"
-check_dpkg
+if [ "x${board}" = "xAM33XX" ] ; then
+	pkg="xserver-xorg-video-modesetting"
+	check_dpkg
+fi
 
 if [ "${deb_pkgs}" ] ; then
 	echo ""
@@ -55,6 +59,8 @@ cat > /tmp/xorg.conf <<-__EOF__
 	EndSection
 __EOF__
 
-sudo cp -v /tmp/xorg.conf /etc/X11/xorg.conf
+if [ "x${board}" = "xAM33XX" ] ; then
+	sudo cp -v /tmp/xorg.conf /etc/X11/xorg.conf
+fi
 
 echo "Please Reboot"
