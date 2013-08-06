@@ -1,10 +1,5 @@
 #!/bin/sh -e
 
-network_down () {
-	echo "Network Down"
-	exit
-}
-
 check_dpkg () {
 	LC_ALL=C dpkg --list | awk '{print $2}' | grep "^${pkg}" >/dev/null || deb_pkgs="${deb_pkgs}${pkg} "
 }
@@ -26,8 +21,6 @@ if [ "${deb_pkgs}" ] ; then
 	sudo apt-get update
 	sudo apt-get -y install ${deb_pkgs}
 fi
-
-ping -c1 www.google.com | grep ttl > /dev/null 2>&1 || network_down
 
 #git_sha="origin/master"
 #git_sha="27cdc1b16f86f970c3c049795d4e71ad531cca3d"
