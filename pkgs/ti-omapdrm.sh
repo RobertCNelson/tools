@@ -4,36 +4,32 @@ check_dpkg () {
 	LC_ALL=C dpkg --list | awk '{print $2}' | grep "^${pkg}" >/dev/null || deb_pkgs="${deb_pkgs}${pkg} "
 }
 
-#package list from:
-#http://anonscm.debian.org/gitweb/?p=collab-maint/xf86-video-omap.git;a=blob;f=debian/control;hb=HEAD
-sudo apt-get update
-
-#libdrm Installs: (wheezy)
-#dh-autoreconf libpciaccess-dev libpciaccess0 libpthread-stubs0
-#libpthread-stubs0-dev libx11-dev libxau-dev libxcb1-dev libxdmcp-dev pkg-config
-#x11proto-core-dev x11proto-input-dev x11proto-kb-dev xorg-sgml-doctools xtrans-dev
-sudo apt-get -y build-dep libdrm
-
 unset deb_pkgs
+pkg="build-essential"
+check_dpkg
+
+#autotools
+pkg="autoconf"
+check_dpkg
+pkg="libtool"
+check_dpkg
+pkg="pkg-config"
+check_dpkg
+
+#libdrm
+pkg="libpthread-stubs0-dev"
+check_dpkg
+
+#ddx
 pkg="xutils-dev"
 check_dpkg
-pkg="debhelper"
+pkg="xserver-xorg-dev"
 check_dpkg
-pkg="libudev-dev"
-check_dpkg
-pkg="x11proto-core-dev"
+pkg="x11proto-xf86dri-dev"
 check_dpkg
 pkg="libxext-dev"
 check_dpkg
-pkg="x11proto-fonts-dev"
-check_dpkg
-pkg="x11proto-gl-dev"
-check_dpkg
-pkg="x11proto-xf86dri-dev"
-check_dpkg
-pkg="x11proto-xf86dri-dev"
-check_dpkg
-pkg="xserver-xorg-dev"
+pkg="libudev-dev"
 check_dpkg
 
 if [ "${deb_pkgs}" ] ; then
@@ -45,7 +41,7 @@ if [ "${deb_pkgs}" ] ; then
 	echo "--------------------"
 fi
 
-git_sha="libdrm-2.4.43"
+git_sha="libdrm-2.4.46"
 project="libdrm"
 server="git://anongit.freedesktop.org/mesa/drm"
 
@@ -74,6 +70,9 @@ git checkout ${git_sha} -b ${git_sha}-build
 ./autogen.sh --prefix=/usr --libdir=/usr/lib/`dpkg-architecture -qDEB_HOST_MULTIARCH 2>/dev/null`/ \
 --disable-libkms --disable-intel --disable-radeon --disable-nouveau --disable-vmwgfx \
 --enable-omap-experimental-api --disable-manpages
+
+#--disable-exynos
+#--disable-freedreno
 
 make
 sudo make install
