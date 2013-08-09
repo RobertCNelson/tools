@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/sh -e
 
 check_dpkg () {
 	LC_ALL=C dpkg --list | awk '{print $2}' | grep "^${pkg}" >/dev/null || deb_pkgs="${deb_pkgs}${pkg} "
@@ -61,13 +61,13 @@ echo ""
 
 cd ${HOME}/git/${project}/
 
-make distclean &> /dev/null
+make distclean >/dev/null 2>&1 || true
 git checkout master -f
 git pull || true
 git branch ${git_sha}-build -D || true
 git checkout ${git_sha} -b ${git_sha}-build
 
-./autogen.sh --prefix=/usr --libdir=/usr/lib/`dpkg-architecture -qDEB_HOST_MULTIARCH 2>/dev/null`/ \
+./autogen.sh --prefix=/usr --libdir=/usr/lib/`dpkg-architecture -qDEB_HOST_MULTIARCH >/dev/null 2>&1`/ \
 --disable-libkms --disable-intel --disable-radeon --disable-nouveau --disable-vmwgfx \
 --enable-omap-experimental-api --disable-manpages
 
@@ -76,7 +76,7 @@ git checkout ${git_sha} -b ${git_sha}-build
 
 make
 sudo make install
-make distclean &> /dev/null
+make distclean >/dev/null 2>&1 || true
 
 git_sha="origin/master"
 project="xf86-video-omap"
@@ -98,7 +98,7 @@ echo ""
 
 cd ${HOME}/git/${project}/
 
-make distclean &> /dev/null
+make distclean >/dev/null 2>&1 || true
 git checkout master -f
 git pull || true
 git branch ${git_sha}-build -D || true
@@ -107,6 +107,7 @@ git checkout ${git_sha} -b ${git_sha}-build
 ./autogen.sh --prefix=/usr
 make
 sudo make install
+make distclean >/dev/null 2>&1 || true
 
 if [ ! -d /etc/X11/ ] ; then
 	sudo mkdir -p /etc/X11/ || true
