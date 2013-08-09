@@ -1,14 +1,12 @@
-#!/bin/bash -e
+#!/bin/sh -e
 
-network_down () {
-	echo "Network Down"
-	exit
+check_dpkg () {
+	LC_ALL=C dpkg --list | awk '{print $2}' | grep "^${pkg}" >/dev/null || deb_pkgs="${deb_pkgs}${pkg} "
 }
 
-ping -c1 www.google.com | grep ttl &> /dev/null || network_down
-
 unset deb_pkgs
-dpkg -l | grep build-essential >/dev/null || deb_pkgs+="build-essential "
+pkg="build-essential"
+check_dpkg
 
 if [ "${deb_pkgs}" ] ; then
 	echo "Installing: ${deb_pkgs}"
