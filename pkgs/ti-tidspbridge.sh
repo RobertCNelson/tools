@@ -1,22 +1,24 @@
 #!/bin/bash -e
 
-network_down () {
-	echo "Network Down"
-	exit
+check_dpkg () {
+	LC_ALL=C dpkg --list | awk '{print $2}' | grep "^${pkg}" >/dev/null || deb_pkgs="${deb_pkgs}${pkg} "
 }
-
-ping -c1 www.google.com | grep ttl &> /dev/null || network_down
 
 install_pkgs () {
 	unset deb_pkgs
-	dpkg -l | grep build-essential >/dev/null || deb_pkgs+="build-essential "
-	dpkg -l | grep gstreamer-tools >/dev/null || deb_pkgs+="gstreamer-tools "
-	dpkg -l | grep libgstreamer0.10-dev >/dev/null || deb_pkgs+="libgstreamer0.10-dev "
+	pkg="build-essential"
+	check_dpkg
+	pkg="gstreamer-tools"
+	check_dpkg
+	pkg="libgstreamer0.10-dev"
+	check_dpkg
 
 	if [ "${deb_pkgs}" ] ; then
+		echo ""
 		echo "Installing: ${deb_pkgs}"
-		sudo apt-get update
 		sudo apt-get -y install ${deb_pkgs}
+		sudo apt-get clean
+		echo "--------------------"
 	fi
 }
 

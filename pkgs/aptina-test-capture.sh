@@ -1,18 +1,21 @@
 #!/bin/bash -e
 
-network_down () {
-	echo "Network Down"
-	exit
-}
-
-ping -c1 www.google.com | grep ttl &> /dev/null || network_down
-
 echo "Aptina test capture using yavta/convert dumping image to /var/www"
 
-if [ ! $(which convert) ] ; then
-	echo "Installing: imagemagick"
-	sudo apt-get update
-	sudo apt-get -y install imagemagick
+check_dpkg () {
+	LC_ALL=C dpkg --list | awk '{print $2}' | grep "^${pkg}" >/dev/null || deb_pkgs="${deb_pkgs}${pkg} "
+}
+
+unset deb_pkgs
+pkg="imagemagick"
+check_dpkg
+
+if [ "${deb_pkgs}" ] ; then
+	echo ""
+	echo "Installing: ${deb_pkgs}"
+	sudo apt-get -y install ${deb_pkgs}
+	sudo apt-get clean
+	echo "--------------------"
 fi
 
 sudo media-ctl -r -l '"mt9p031 2-0048":0->"OMAP3 ISP CCDC":0[1], "OMAP3 ISP CCDC":2->"OMAP3 ISP preview":0[1], "OMAP3 ISP preview":1->"OMAP3 ISP resizer":0[1], "OMAP3 ISP resizer":1->"OMAP3 ISP resizer output":0[1]'

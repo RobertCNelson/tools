@@ -46,15 +46,18 @@ check_running_system () {
 	echo "-----------------------------"
 }
 
+check_dpkg () {
+	LC_ALL=C dpkg --list | awk '{print $2}' | grep "^${pkg}" >/dev/null || deb_pkgs="${deb_pkgs}${pkg} "
+}
+
 check_host_pkgs () {
 	unset deb_pkgs
 	pkg="dosfstools"
-	dpkg -l | awk '{print $2}' | grep "^${pkg}" >/dev/null || deb_pkgs="${deb_pkgs}${pkg} "
+	check_dpkg
 	pkg="rsync"
-	dpkg -l | awk '{print $2}' | grep "^${pkg}" >/dev/null || deb_pkgs="${deb_pkgs}${pkg} "
-	#ignoring Squeeze or Lucid: uboot-mkimage
+	check_dpkg
 	pkg="u-boot-tools"
-	dpkg -l | awk '{print $2}' | grep "^${pkg}" >/dev/null || deb_pkgs="${deb_pkgs}${pkg} "
+	check_dpkg
 
 	if [ "${deb_pkgs}" ] ; then
 		ping -c1 www.google.com | grep ttl >/dev/null 2>&1 || network_down

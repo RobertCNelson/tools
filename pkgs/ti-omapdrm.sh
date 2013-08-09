@@ -1,11 +1,8 @@
 #!/bin/bash -e
 
-network_down () {
-	echo "Network Down"
-	exit
+check_dpkg () {
+	LC_ALL=C dpkg --list | awk '{print $2}' | grep "^${pkg}" >/dev/null || deb_pkgs="${deb_pkgs}${pkg} "
 }
-
-ping -c1 www.google.com | grep ttl &> /dev/null || network_down
 
 #package list from:
 #http://anonscm.debian.org/gitweb/?p=collab-maint/xf86-video-omap.git;a=blob;f=debian/control;hb=HEAD
@@ -17,11 +14,35 @@ sudo apt-get update
 #x11proto-core-dev x11proto-input-dev x11proto-kb-dev xorg-sgml-doctools xtrans-dev
 sudo apt-get -y build-dep libdrm
 
-#for: xf86-video-omap
-sudo apt-get -y install xutils-dev
+unset deb_pkgs
+pkg="xutils-dev"
+check_dpkg
+pkg="debhelper"
+check_dpkg
+pkg="libudev-dev"
+check_dpkg
+pkg="x11proto-core-dev"
+check_dpkg
+pkg="libxext-dev"
+check_dpkg
+pkg="x11proto-fonts-dev"
+check_dpkg
+pkg="x11proto-gl-dev"
+check_dpkg
+pkg="x11proto-xf86dri-dev"
+check_dpkg
+pkg="x11proto-xf86dri-dev"
+check_dpkg
+pkg="xserver-xorg-dev"
+check_dpkg
 
-#need to review:
-sudo apt-get -y install debhelper libudev-dev x11proto-core-dev libxext-dev x11proto-fonts-dev x11proto-gl-dev x11proto-xf86dri-dev x11proto-xf86dri-dev xserver-xorg-dev
+if [ "${deb_pkgs}" ] ; then
+	echo ""
+	echo "Installing: ${deb_pkgs}"
+	sudo apt-get -y install ${deb_pkgs}
+	sudo apt-get clean
+	echo "--------------------"
+fi
 
 git_sha="libdrm-2.4.43"
 project="libdrm"

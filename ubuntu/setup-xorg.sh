@@ -3,8 +3,25 @@
 sudo apt-get update
 sudo apt-get -y upgrade
 
-sudo apt-get -y install xserver-xorg-video-modesetting xserver-xorg x11-xserver-utils
-sudo apt-get clean
+check_dpkg () {
+	LC_ALL=C dpkg --list | awk '{print $2}' | grep "^${pkg}" >/dev/null || deb_pkgs="${deb_pkgs}${pkg} "
+}
+
+unset deb_pkgs
+pkg="xserver-xorg-video-modesetting"
+check_dpkg
+pkg="xserver-xorg"
+check_dpkg
+pkg="x11-xserver-utils"
+check_dpkg
+
+if [ "${deb_pkgs}" ] ; then
+	echo ""
+	echo "Installing: ${deb_pkgs}"
+	sudo apt-get -y install ${deb_pkgs}
+	sudo apt-get clean
+	echo "--------------------"
+fi
 
 cat > /tmp/xorg.conf <<-__EOF__
 	Section "Monitor"

@@ -1,18 +1,26 @@
 #!/bin/bash -e
 
-network_down () {
-	echo "Network Down"
-	exit
+check_dpkg () {
+	LC_ALL=C dpkg --list | awk '{print $2}' | grep "^${pkg}" >/dev/null || deb_pkgs="${deb_pkgs}${pkg} "
 }
 
-ping -c1 www.google.com | grep ttl &> /dev/null || network_down
-
 unset deb_pkgs
-dpkg -l | grep build-essential >/dev/null || deb_pkgs+="build-essential "
+pkg="build-essential"
+check_dpkg
+pkg="dh-autoreconf"
+check_dpkg
+pkg="libudev-dev"
+check_dpkg
+pkg="pkg-config"
+check_dpkg
 
-echo "Installing: ${deb_pkgs}dh-autoreconf libudev-dev pkg-config"
-sudo apt-get update
-sudo apt-get -y install ${deb_pkgs}dh-autoreconf libudev-dev pkg-config
+if [ "${deb_pkgs}" ] ; then
+	echo ""
+	echo "Installing: ${deb_pkgs}"
+	sudo apt-get -y install ${deb_pkgs}
+	sudo apt-get clean
+	echo "--------------------"
+fi
 
 git_sha="origin/master"
 project="media-ctl"
