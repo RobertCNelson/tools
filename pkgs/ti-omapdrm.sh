@@ -64,7 +64,12 @@ cd ${HOME}/git/${project}/
 make distclean >/dev/null 2>&1 || true
 git checkout master -f
 git pull || true
-git branch ${git_sha}-build -D || true
+
+test_for_branch=$(git branch --list ${git_sha}-build)
+if [ "x${test_for_branch}" != "x" ] ; then
+	git branch ${git_sha}-build -D
+fi
+
 git checkout ${git_sha} -b ${git_sha}-build
 
 ./autogen.sh --prefix=/usr --libdir=/usr/lib/`dpkg-architecture -qDEB_HOST_MULTIARCH >/dev/null 2>&1`/ \
@@ -101,7 +106,12 @@ cd ${HOME}/git/${project}/
 make distclean >/dev/null 2>&1 || true
 git checkout master -f
 git pull || true
-git branch ${git_sha}-build -D || true
+
+test_for_branch=$(git branch --list ${git_sha}-build)
+if [ "x${test_for_branch}" != "x" ] ; then
+	git branch ${git_sha}-build -D
+fi
+
 git checkout ${git_sha} -b ${git_sha}-build
 
 ./autogen.sh --prefix=/usr
