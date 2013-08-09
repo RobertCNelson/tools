@@ -14,6 +14,7 @@ if [ "${deb_pkgs}" ] ; then
 	echo "Installing: ${deb_pkgs}"
 	sudo apt-get update
 	sudo apt-get -y install ${deb_pkgs}
+	sudo apt-get clean
 fi
 
 git_sha="origin/master"

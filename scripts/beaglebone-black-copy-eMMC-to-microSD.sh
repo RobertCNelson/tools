@@ -64,6 +64,7 @@ check_host_pkgs () {
 		echo "Installing: ${deb_pkgs}"
 		apt-get update -o Acquire::Pdiffs=false
 		apt-get -y install ${deb_pkgs}
+		apt-get clean
 	fi
 }
 
