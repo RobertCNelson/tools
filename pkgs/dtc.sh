@@ -28,7 +28,7 @@ fi
 #git_sha="fdc7387845420168ee5dd479fbe4391ff93bddab"
 git_sha="65cc4d2748a2c2e6f27f1cf39e07a5dbabd80ebf"
 project="dtc"
-server="git://git.jdl.com/software"
+server="git://git.kernel.org/pub/scm/linux/kernel/git/jdl"
 
 if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
 	git clone ${server}/${project}.git ${HOME}/git/${project}/
@@ -38,6 +38,12 @@ if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
 	rm -rf ${HOME}/git/${project}/ || true
 	echo "error: git failure, try re-runing"
 	exit
+fi
+
+unset old_address
+old_address=$(cat ${HOME}/git/${project}/.git/config | grep "jdl.com")
+if [ ! "x${old_address}" = "x" ] ; then
+	sed -i -e 's:git.jdl.com/software:git.kernel.org/pub/scm/linux/kernel/git/jdl:g' ${HOME}/git/${project}/.git/config
 fi
 
 cd ${HOME}/git/${project}/
