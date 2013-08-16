@@ -15,8 +15,8 @@ check_dpkg
 pkg="slim"
 check_dpkg
 if [ "x${board}" = "xAM33XX" ] ; then
-	check_dpkg
 	pkg="xserver-xorg-video-modesetting"
+	check_dpkg
 fi
 pkg="xserver-xorg"
 check_dpkg

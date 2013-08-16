@@ -14,12 +14,14 @@ pkg="lightdm"
 check_dpkg
 pkg="lxde-core"
 check_dpkg
-pkg="x11-xserver-utils"
-check_dpkg
 if [ "x${board}" = "xAM33XX" ] ; then
 	pkg="xserver-xorg-video-modesetting"
 	check_dpkg
 fi
+pkg="xserver-xorg"
+check_dpkg
+pkg="x11-xserver-utils"
+check_dpkg
 
 if [ "${deb_pkgs}" ] ; then
 	echo ""
