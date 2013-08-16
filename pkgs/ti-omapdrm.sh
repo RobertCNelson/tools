@@ -136,6 +136,7 @@ cat > /tmp/xorg.conf <<-__EOF__
 	Section "Device"
 	        Identifier      "Builtin Default fbdev Device 0"
 	        Driver          "omap"
+	        Option          "HWcursor"      "false"
 	EndSection
 
 	Section "Screen"
