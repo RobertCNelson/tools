@@ -53,6 +53,7 @@ cat > /tmp/xorg.conf <<-__EOF__
 	Section "Device"
 	        Identifier      "Builtin Default fbdev Device 0"
 	        Driver          "modesetting"
+	        Option          "HWcursor"      "false"
 	EndSection
 
 	Section "Screen"
