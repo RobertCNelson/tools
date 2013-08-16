@@ -45,19 +45,6 @@ if [ "x${USER}" != "xroot" ] ; then
 	echo "auto_login	yes" | sudo tee -a /etc/slim.conf >/dev/null
 fi
 
-#Ubuntu Raring: 244 pkgs, 61.6 MB dl, 183 MB of space
-#sudo apt-get -y install lxde-core lxdm xserver-xorg-video-modesetting xserver-xorg x11-xserver-utils
-#sudo apt-get clean
-##lxdm
-#sudo sed -i -e 's:# session=/usr/bin/startlxde:session=/usr/bin/startlxde:g' /etc/lxdm/lxdm.conf
-#if [ "x${USER}" != "xroot" ] ; then
-#	username=$(echo ${USER})
-#	sudo sed -i -e 's:# autologin=dgod:autologin='${username}':g' /etc/lxdm/lxdm.conf
-#else
-#	echo "To enable autologin:"
-#	echo "change: [# autologin=dgod] in /etc/lxdm/lxdm.conf to [autologin=username]"
-#fi
-
 cat > /tmp/xorg.conf <<-__EOF__
 	Section "Monitor"
 	        Identifier      "Builtin Default Monitor"

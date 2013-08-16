@@ -10,9 +10,9 @@ check_dpkg () {
 }
 
 unset deb_pkgs
-pkg="lightdm"
-check_dpkg
 pkg="lxde-core"
+check_dpkg
+pkg="slim"
 check_dpkg
 if [ "x${board}" = "xAM33XX" ] ; then
 	pkg="xserver-xorg-video-modesetting"
@@ -31,11 +31,18 @@ if [ "${deb_pkgs}" ] ; then
 	echo "--------------------"
 fi
 
+#slim
 if [ "x${USER}" != "xroot" ] ; then
-	sudo /usr/lib/arm-linux-gnueabihf/lightdm/lightdm-set-defaults --autologin ${USER}
-else
-	echo "To enable autologin:"
-	echo "sudo /usr/lib/arm-linux-gnueabihf/lightdm/lightdm-set-defaults --autologin username"
+	echo "#!/bin/sh" > ${HOME}/.xinitrc
+	echo "" >> ${HOME}/.xinitrc
+	echo "exec startlxde" >> ${HOME}/.xinitrc
+
+	chmod +x ${HOME}/.xinitrc
+
+	#/etc/slim.conf modfications:
+	sudo sed -i -e 's:default,start:startlxde,default,start:g' /etc/slim.conf
+	echo "default_user	${USER}" | sudo tee -a /etc/slim.conf >/dev/null
+	echo "auto_login	yes" | sudo tee -a /etc/slim.conf >/dev/null
 fi
 
 cat > /tmp/xorg.conf <<-__EOF__
