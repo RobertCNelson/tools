@@ -19,9 +19,9 @@ check_dpkg
 
 if [ "${deb_pkgs}" ] ; then
 	echo "Installing: ${deb_pkgs}"
-	sudo apt-get update
-	sudo apt-get -y install ${deb_pkgs}
-	sudo apt-get clean
+	apt-get update
+	apt-get -y install ${deb_pkgs}
+	apt-get clean
 fi
 
 git pull
