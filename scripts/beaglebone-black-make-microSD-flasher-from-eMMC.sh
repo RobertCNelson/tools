@@ -113,7 +113,7 @@ partition_drive () {
 
 	dd if=/dev/zero of=${destination} bs=1M count=16
 	sync
-	
+
 	#64Mb fat formatted boot partition
 	LC_ALL=C sfdisk --force --in-order --Linux --unit M "${destination}" <<-__EOF__
 		1,64,0xe,*
@@ -125,24 +125,36 @@ partition_drive () {
 	format_root
 }
 
+write_failure () {
+	echo "writing to [${destination}] failed..."
+
+	if [ -e /sys/class/leds/beaglebone\:green\:usr0/trigger ] ; then
+		echo heartbeat > /sys/class/leds/beaglebone\:green\:usr0/trigger
+		echo heartbeat > /sys/class/leds/beaglebone\:green\:usr1/trigger
+		echo heartbeat > /sys/class/leds/beaglebone\:green\:usr2/trigger
+		echo heartbeat > /sys/class/leds/beaglebone\:green\:usr3/trigger
+	fi
+	echo "-----------------------------"
+}
+
 copy_boot () {
 	mkdir -p /tmp/boot/ || true
 	mount ${destination}p1 /tmp/boot/
 	#Make sure the BootLoader gets copied first:
-	cp -v /boot/uboot/MLO /tmp/boot/MLO
+	cp -v /boot/uboot/MLO /tmp/boot/MLO || write_failure
 	sync
-	cp -v /boot/uboot/u-boot.img /tmp/boot/u-boot.img
+	cp -v /boot/uboot/u-boot.img /tmp/boot/u-boot.img || write_failure
 	sync
 
-	rsync -aAXv /boot/uboot/ /tmp/boot/ --exclude={MLO,u-boot.img,*bak,flash-eMMC.txt}
+	rsync -aAXv /boot/uboot/ /tmp/boot/ --exclude={MLO,u-boot.img,*bak,flash-eMMC.txt} || write_failure
 	sync
 
 	if [ -f /tmp/boot/SOC.sh ] ; then
 		#enable: boot scripts:
-		touch /tmp/boot/run_boot-scripts
+		touch /tmp/boot/run_boot-scripts || write_failure
 
 		#enable: Flasher script:
-		touch /tmp/boot/flash-eMMC.txt
+		touch /tmp/boot/flash-eMMC.txt || write_failure
 	fi
 
 	unset root_uuid
@@ -166,13 +178,13 @@ copy_boot () {
 copy_rootfs () {
 	mkdir -p /tmp/rootfs/ || true
 	mount ${destination}p2 /tmp/rootfs/
-	rsync -aAXv /* /tmp/rootfs/ --exclude={/dev/*,/proc/*,/sys/*,/tmp/*,/run/*,/mnt/*,/media/*,/lost+found,/boot/*,/lib/modules/*}
+	rsync -aAXv /* /tmp/rootfs/ --exclude={/dev/*,/proc/*,/sys/*,/tmp/*,/run/*,/mnt/*,/media/*,/lost+found,/boot/*,/lib/modules/*} || write_failure
 	sync
 	mkdir -p /tmp/rootfs/boot/uboot/ || true
 	mkdir -p /tmp/rootfs/lib/modules/`uname -r` || true
-	rsync -aAXv /lib/modules/`uname -r`/* /tmp/rootfs/lib/modules/`uname -r`/
+	rsync -aAXv /lib/modules/`uname -r`/* /tmp/rootfs/lib/modules/`uname -r`/ || write_failure
 	sync
-	cp /boot/initrd.img-`uname -r` /tmp/rootfs/boot/
+	cp /boot/initrd.img-`uname -r` /tmp/rootfs/boot/ || write_failure
 	sync
 
 	unset boot_uuid
