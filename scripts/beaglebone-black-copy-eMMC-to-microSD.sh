@@ -113,9 +113,9 @@ format_root () {
 }
 
 partition_drive () {
+	flush_cache
 	umount ${destination}p1 || true
 	umount ${destination}p2 || true
-	flush_cache
 
 	dd if=/dev/zero of=${destination} bs=1M count=16
 	flush_cache
@@ -170,7 +170,6 @@ copy_boot () {
 		root_uuid="${source}p2"
 	fi
 	flush_cache
-
 	umount ${destination}p1 || true
 }
 
@@ -212,7 +211,6 @@ copy_rootfs () {
 	echo "${root_uuid}  /  ${root_filesystem}  noatime,errors=remount-ro  0  1" >> /tmp/rootfs/etc/fstab
 	echo "${boot_uuid}  /boot/uboot  auto  defaults  0  0" >> /tmp/rootfs/etc/fstab
 	flush_cache
-
 	umount ${destination}p2 || true
 
 	if [ -e /sys/class/leds/beaglebone\:green\:usr0/trigger ] ; then

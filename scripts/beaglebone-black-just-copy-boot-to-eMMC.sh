@@ -115,9 +115,11 @@ mount_n_check () {
 	mkdir -p /tmp/boot/ || true
 	if mount -t vfat ${destination}p1 /tmp/boot/ ; then
 		if [ -f /tmp/boot/MLO ] ; then
+			flush_cache
 			umount ${destination}p1 || true
 			format_boot
 		else
+			flush_cache
 			umount ${destination}p1 || true
 			echo "use: beaglebone-black-copy-microSD-to-eMMC.sh"
 		fi
@@ -153,7 +155,6 @@ copy_boot () {
 		root_uuid="${source}p2"
 	fi
 	flush_cache
-
 	umount ${destination}p1 || true
 }
 
@@ -185,7 +186,6 @@ fix_rootfs () {
 	echo "${root_uuid}  /  ${root_filesystem}  noatime,errors=remount-ro  0  1" >> /tmp/rootfs/etc/fstab
 	echo "${boot_uuid}  /boot/uboot  auto  defaults  0  0" >> /tmp/rootfs/etc/fstab
 	flush_cache
-
 	umount ${destination}p2 || true
 
 	if [ -e /sys/class/leds/beaglebone\:green\:usr0/trigger ] ; then

@@ -113,19 +113,32 @@ format_root () {
 }
 
 partition_drive () {
+	flush_cache
 	umount ${destination}p1 || true
 	umount ${destination}p2 || true
-	flush_cache
 
-	dd if=/dev/zero of=${destination} bs=1M count=16
-	flush_cache
+	#eMMC, try to save it by not "always" eraseing everything over and over...
+	mkdir -p /tmp/boot/ || true
+	mount ${destination}p1 /tmp/boot/
 
-	#64Mb fat formatted boot partition
-	LC_ALL=C sfdisk --force --in-order --Linux --unit M "${destination}" <<-__EOF__
-		1,64,0xe,*
-		,,,-
-	__EOF__
-	flush_cache
+	#/tmp/boot/SOC.sh (my image)
+	#/tmp/boot/LICENSE.txt (probally Angstrom, but mine too..)
+	if [ -f /tmp/boot/SOC.sh ] || [ -f /tmp/boot/LICENSE.txt ] ; then
+		flush_cache
+		umount ${destination}p1 || true
+	else
+		flush_cache
+		umount ${destination}p1 || true
+		dd if=/dev/zero of=${destination} bs=1M count=16
+		flush_cache
+
+		#64Mb fat formatted boot partition
+		LC_ALL=C sfdisk --force --in-order --Linux --unit M "${destination}" <<-__EOF__
+			1,64,0xe,*
+			,,,-
+		__EOF__
+		flush_cache
+	fi
 
 	format_boot
 	format_root
@@ -170,7 +183,6 @@ copy_boot () {
 		root_uuid="${source}p2"
 	fi
 	flush_cache
-
 	umount ${destination}p1 || true
 }
 
@@ -212,7 +224,6 @@ copy_rootfs () {
 	echo "${root_uuid}  /  ${root_filesystem}  noatime,errors=remount-ro  0  1" >> /tmp/rootfs/etc/fstab
 	echo "${boot_uuid}  /boot/uboot  auto  defaults  0  0" >> /tmp/rootfs/etc/fstab
 	flush_cache
-
 	umount ${destination}p2 || true
 
 	if [ -e /sys/class/leds/beaglebone\:green\:usr0/trigger ] ; then
