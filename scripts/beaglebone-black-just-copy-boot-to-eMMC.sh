@@ -86,25 +86,31 @@ update_boot_files () {
 	mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-$(uname -r) /boot/uboot/uInitrd
 }
 
+flush_cache () {
+	sync
+	blockdev --flushbufs ${destination}
+}
+
 fdisk_toggle_boot () {
 	fdisk ${destination} <<-__EOF__
 	a
 	1
 	w
 	__EOF__
-	sync
+	flush_cache
 }
 
 format_boot () {
 	LC_ALL=C fdisk -l ${destination} | grep ${destination}p1 | grep '*' || fdisk_toggle_boot
 
 	mkfs.vfat -F 16 ${destination}p1 -n boot
-	sync
+	flush_cache
 }
 
 mount_n_check () {
 	umount ${destination}p1 || true
 	umount ${destination}p2 || true
+	flush_cache
 
 	mkdir -p /tmp/boot/ || true
 	if mount -t vfat ${destination}p1 /tmp/boot/ ; then
@@ -122,15 +128,16 @@ mount_n_check () {
 
 copy_boot () {
 	mkdir -p /tmp/boot/ || true
-	mount ${destination}p1 /tmp/boot/
+	mount ${destination}p1 /tmp/boot/ -o sync
 	#Make sure the BootLoader gets copied first:
-	cp -v /boot/uboot/MLO /tmp/boot/MLO
-	sync
-	cp -v /boot/uboot/u-boot.img /tmp/boot/u-boot.img
-	sync
+	cp -v /boot/uboot/MLO /tmp/boot/MLO || write_failure
+	flush_cache
 
-	rsync -aAXv /boot/uboot/ /tmp/boot/ --exclude={MLO,u-boot.img,*bak,flash-eMMC.txt}
-	sync
+	cp -v /boot/uboot/u-boot.img /tmp/boot/u-boot.img || write_failure
+	flush_cache
+
+	rsync -aAXv /boot/uboot/ /tmp/boot/ --exclude={MLO,u-boot.img,*bak,flash-eMMC.txt} || write_failure
+	flush_cache
 
 	unset root_uuid
 	root_uuid=$(/sbin/blkid -s UUID -o value ${destination}p2)
@@ -145,7 +152,7 @@ copy_boot () {
 	else
 		root_uuid="${source}p2"
 	fi
-	sync
+	flush_cache
 
 	umount ${destination}p1 || true
 }
@@ -177,7 +184,7 @@ fix_rootfs () {
 	echo "#" >> /tmp/rootfs/etc/fstab
 	echo "${root_uuid}  /  ${root_filesystem}  noatime,errors=remount-ro  0  1" >> /tmp/rootfs/etc/fstab
 	echo "${boot_uuid}  /boot/uboot  auto  defaults  0  0" >> /tmp/rootfs/etc/fstab
-	sync
+	flush_cache
 
 	umount ${destination}p2 || true
 

@@ -86,41 +86,47 @@ update_boot_files () {
 	mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initramfs -d /boot/initrd.img-$(uname -r) /boot/uboot/uInitrd
 }
 
+flush_cache () {
+	sync
+	blockdev --flushbufs ${destination}
+}
+
 fdisk_toggle_boot () {
 	fdisk ${destination} <<-__EOF__
 	a
 	1
 	w
 	__EOF__
-	sync
+	flush_cache
 }
 
 format_boot () {
 	LC_ALL=C fdisk -l ${destination} | grep ${destination}p1 | grep '*' || fdisk_toggle_boot
 
 	mkfs.vfat -F 16 ${destination}p1 -n boot
-	sync
+	flush_cache
 }
 
 format_root () {
 	mkfs.ext4 ${destination}p2 -L rootfs
-	sync
+	flush_cache
 }
 
 partition_drive () {
 	umount ${destination}p1 || true
 	umount ${destination}p2 || true
+	flush_cache
 
 	dd if=/dev/zero of=${destination} bs=1M count=16
-	sync
+	flush_cache
 
 	#64Mb fat formatted boot partition
 	LC_ALL=C sfdisk --force --in-order --Linux --unit M "${destination}" <<-__EOF__
 		1,64,0xe,*
 		,,,-
 	__EOF__
+	flush_cache
 
-	sync
 	format_boot
 	format_root
 }
@@ -139,15 +145,16 @@ write_failure () {
 
 copy_boot () {
 	mkdir -p /tmp/boot/ || true
-	mount ${destination}p1 /tmp/boot/
+	mount ${destination}p1 /tmp/boot/ -o sync
 	#Make sure the BootLoader gets copied first:
 	cp -v /boot/uboot/MLO /tmp/boot/MLO || write_failure
-	sync
+	flush_cache
+
 	cp -v /boot/uboot/u-boot.img /tmp/boot/u-boot.img || write_failure
-	sync
+	flush_cache
 
 	rsync -aAXv /boot/uboot/ /tmp/boot/ --exclude={MLO,u-boot.img,*bak,flash-eMMC.txt} || write_failure
-	sync
+	flush_cache
 
 	if [ -f /tmp/boot/SOC.sh ] ; then
 		#enable: boot scripts:
@@ -155,6 +162,7 @@ copy_boot () {
 
 		#enable: Flasher script:
 		touch /tmp/boot/flash-eMMC.txt || write_failure
+		flush_cache
 	fi
 
 	unset root_uuid
@@ -170,22 +178,24 @@ copy_boot () {
 	else
 		root_uuid="${source}p2"
 	fi
-	sync
+	flush_cache
 
 	umount ${destination}p1 || true
 }
 
 copy_rootfs () {
 	mkdir -p /tmp/rootfs/ || true
-	mount ${destination}p2 /tmp/rootfs/
+	mount ${destination}p2 /tmp/rootfs/ -o async,noatime
 	rsync -aAXv /* /tmp/rootfs/ --exclude={/dev/*,/proc/*,/sys/*,/tmp/*,/run/*,/mnt/*,/media/*,/lost+found,/boot/*,/lib/modules/*} || write_failure
-	sync
+	flush_cache
+
 	mkdir -p /tmp/rootfs/boot/uboot/ || true
 	mkdir -p /tmp/rootfs/lib/modules/`uname -r` || true
 	rsync -aAXv /lib/modules/`uname -r`/* /tmp/rootfs/lib/modules/`uname -r`/ || write_failure
-	sync
+	flush_cache
+
 	cp /boot/initrd.img-`uname -r` /tmp/rootfs/boot/ || write_failure
-	sync
+	flush_cache
 
 	unset boot_uuid
 	boot_uuid=$(/sbin/blkid -s UUID -o value ${destination}p1)
@@ -210,7 +220,7 @@ copy_rootfs () {
 	echo "#" >> /tmp/rootfs/etc/fstab
 	echo "${root_uuid}  /  ${root_filesystem}  noatime,errors=remount-ro  0  1" >> /tmp/rootfs/etc/fstab
 	echo "${boot_uuid}  /boot/uboot  auto  defaults  0  0" >> /tmp/rootfs/etc/fstab
-	sync
+	flush_cache
 
 	umount ${destination}p2 || true
 
