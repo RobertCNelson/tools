@@ -128,6 +128,22 @@ mount_n_check () {
 	fi
 }
 
+write_failure () {
+	echo "writing to [${destination}] failed..."
+
+	if [ -e /sys/class/leds/beaglebone\:green\:usr0/trigger ] ; then
+		echo heartbeat > /sys/class/leds/beaglebone\:green\:usr0/trigger
+		echo heartbeat > /sys/class/leds/beaglebone\:green\:usr1/trigger
+		echo heartbeat > /sys/class/leds/beaglebone\:green\:usr2/trigger
+		echo heartbeat > /sys/class/leds/beaglebone\:green\:usr3/trigger
+	fi
+	echo "-----------------------------"
+	flush_cache
+	umount ${destination}p1 || true
+	umount ${destination}p2 || true
+	exit
+}
+
 copy_boot () {
 	mkdir -p /tmp/boot/ || true
 	mount ${destination}p1 /tmp/boot/ -o sync

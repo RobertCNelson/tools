@@ -154,6 +154,10 @@ write_failure () {
 		echo heartbeat > /sys/class/leds/beaglebone\:green\:usr3/trigger
 	fi
 	echo "-----------------------------"
+	flush_cache
+	umount ${destination}p1 || true
+	umount ${destination}p2 || true
+	exit
 }
 
 copy_boot () {
