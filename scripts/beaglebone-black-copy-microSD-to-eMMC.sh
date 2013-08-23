@@ -145,7 +145,7 @@ write_failure () {
 
 copy_boot () {
 	mkdir -p /tmp/boot/ || true
-	mount ${destination}p1 /tmp/boot/
+	mount ${destination}p1 /tmp/boot/ -o sync
 	#Make sure the BootLoader gets copied first:
 	cp -v /boot/uboot/MLO /tmp/boot/MLO || write_failure
 	flush_cache
@@ -176,7 +176,7 @@ copy_boot () {
 
 copy_rootfs () {
 	mkdir -p /tmp/rootfs/ || true
-	mount ${destination}p2 /tmp/rootfs/
+	mount ${destination}p2 /tmp/rootfs/ -o async,noatime
 	rsync -aAXv /* /tmp/rootfs/ --exclude={/dev/*,/proc/*,/sys/*,/tmp/*,/run/*,/mnt/*,/media/*,/lost+found,/boot/*,/lib/modules/*} || write_failure
 	flush_cache
 
