@@ -12,47 +12,23 @@ DRIVE="/boot/uboot"
 
 TEMPDIR=$(mktemp -d)
 
-rcn_ee_down_use_mirror () {
-	echo "rcn-ee.net down, switching to slower backup mirror"
-	echo "-----------------------------"
-	MIRROR=${BACKUP_MIRROR}
-	RCNEEDOWN=1
-}
-
 dl_bootloader () {
 	echo ""
 	echo "Downloading Device's Bootloader"
 	echo "-----------------------------"
-	bootlist="bootloader-ng"
+	conf_bl_listfile="bootloader-ng"
 	minimal_boot="1"
-	unset disable_mirror
 
 	mkdir -p ${TEMPDIR}/dl/${DISTARCH}
 
-	unset RCNEEDOWN
-	if [ "${disable_mirror}" ] ; then
-		wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/tools/latest/${bootlist}
-	else
-		echo "attempting to use rcn-ee.net for dl files [10 second time out]..."
-		wget -T 10 -t 1 --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/tools/latest/${bootlist}
+	wget --no-verbose --directory-prefix="${TEMPDIR}/dl/" ${conf_bl_http}/${conf_bl_listfile}
+
+	if [ ! -f ${TEMPDIR}/dl/${conf_bl_listfile} ] ; then
+		echo "error: can't connect to rcn-ee.net, retry in a few minutes..."
+		exit
 	fi
 
-	if [ ! -f ${TEMPDIR}/dl/${bootlist} ] ; then
-		if [ "${disable_mirror}" ] ; then
-			echo "error: can't connect to rcn-ee.net, retry in a few minutes (backup mirror down)"
-			exit
-		else
-			rcn_ee_down_use_mirror
-			wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${MIRROR}/tools/latest/${bootlist}
-		fi
-	fi
-
-	if [ "${RCNEEDOWN}" ] ; then
-		sed -i -e "s/rcn-ee.net/rcn-ee.homeip.net:81/g" ${TEMPDIR}/dl/${bootlist}
-		sed -i -e 's:81/deb/:81/dl/mirrors/deb/:g' ${TEMPDIR}/dl/${bootlist}
-	fi
-
-	boot_version=$(cat ${TEMPDIR}/dl/${bootlist} | grep "VERSION:" | awk -F":" '{print $2}')
+	boot_version=$(cat ${TEMPDIR}/dl/${conf_bl_listfile} | grep "VERSION:" | awk -F":" '{print $2}')
 	if [ "x${boot_version}" != "x${minimal_boot}" ] ; then
 		echo "Error: This script is out of date and unsupported..."
 		echo "Please Visit: https://github.com/RobertCNelson to find updates..."
@@ -66,8 +42,8 @@ dl_bootloader () {
 	fi
 
 	if [ "${spl_name}" ] ; then
-		SPL=$(cat ${TEMPDIR}/dl/${bootlist} | grep "${ABI}:${board}:SPL" | awk '{print $2}')
-		wget --no-verbose --directory-prefix=${TEMPDIR}/dl/ ${SPL}
+		SPL=$(cat ${TEMPDIR}/dl/${conf_bl_listfile} | grep "${ABI}:${conf_board}:SPL" | awk '{print $2}')
+		wget --no-verbose --directory-prefix="${TEMPDIR}/dl/" ${SPL}
 		SPL=${SPL##*/}
 		echo "SPL Bootloader: ${SPL}"
 	else
@@ -75,8 +51,8 @@ dl_bootloader () {
 	fi
 
 	if [ "${boot_name}" ] ; then
-		UBOOT=$(cat ${TEMPDIR}/dl/${bootlist} | grep "${ABI}:${board}:BOOT" | awk '{print $2}')
-		wget --directory-prefix=${TEMPDIR}/dl/ ${UBOOT}
+		UBOOT=$(cat ${TEMPDIR}/dl/${conf_bl_listfile} | grep "${ABI}:${conf_board}:BOOT" | awk '{print $2}')
+		wget --directory-prefix="${TEMPDIR}/dl/" ${UBOOT}
 		UBOOT=${UBOOT##*/}
 		echo "UBOOT Bootloader: ${UBOOT}"
 	else
@@ -99,9 +75,9 @@ fatfs_boot () {
 	echo "Warning: this script will flash your bootloader with:"
 	echo "SPL: [${SPL}]"
 	echo "u-boot.img: [${UBOOT}]"
-	echo "for: [${board}]"
+	echo "for: [${conf_board}]"
 	echo ""
-	read -p "Are you 100% sure, on selecting [${board}] (y/n)? "
+	read -p "Are you 100% sure, on selecting [${conf_board}] (y/n)? "
 	[ "${REPLY}" == "y" ] || exit
 	echo "-----------------------------"
 	if [ "${spl_name}" ] ; then
@@ -127,9 +103,9 @@ dd_uboot_boot () {
 	echo "-----------------------------"
 	echo "Warning: this script will flash your bootloader with:"
 	echo "u-boot.imx: [${UBOOT}]"
-	echo "for: [${board}]"
+	echo "for: [${conf_board}]"
 	echo ""
-	read -p "Are you 100% sure, on selecting [${board}] (y/n)? "
+	read -p "Are you 100% sure, on selecting [${conf_board}] (y/n)? "
 	[ "${REPLY}" == "y" ] || exit
 	echo "-----------------------------"
 
@@ -166,9 +142,9 @@ dd_spl_uboot_boot () {
 	echo "Warning: this script will flash your bootloader with:"
 	echo "u-boot-mmc-spl.bin: [${SPL}]"
 	echo "u-boot.bin: [${UBOOT}]"
-	echo "for: [${board}]"
+	echo "for: [${conf_board}]"
 	echo ""
-	read -p "Are you 100% sure, on selecting [${board}] (y/n)? "
+	read -p "Are you 100% sure, on selecting [${conf_board}] (y/n)? "
 	[ "${REPLY}" == "y" ] || exit
 	echo "-----------------------------"
 
@@ -206,7 +182,7 @@ dd_spl_uboot_boot () {
 }
 
 got_board () {
-	BOOTLOADER=${board}
+	BOOTLOADER=${conf_board}
 
 	case "${bootloader_location}" in
 	omap_fatfs_boot_part|fatfs_boot)
@@ -237,6 +213,7 @@ check_soc_sh () {
 	if [ -f ${DRIVE}/SOC.sh ] ; then
 		source ${DRIVE}/SOC.sh
 		if [ "x${board}" != "x" ] ; then
+			conf_board="${board}"
 			got_board
 		else
 			echo "Sorry: board undefined in [${DRIVE}/SOC.sh] can not update bootloader safely"
