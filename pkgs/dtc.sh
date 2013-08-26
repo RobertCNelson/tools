@@ -41,7 +41,7 @@ if [ ! -f ${HOME}/git/${project}/.git/config ] ; then
 fi
 
 unset old_address
-old_address=$(cat ${HOME}/git/${project}/.git/config | grep "jdl.com")
+old_address=$(cat ${HOME}/git/${project}/.git/config | grep "jdl.com" || true)
 if [ ! "x${old_address}" = "x" ] ; then
 	sed -i -e 's:git.jdl.com/software:git.kernel.org/pub/scm/linux/kernel/git/jdl:g' ${HOME}/git/${project}/.git/config
 fi
