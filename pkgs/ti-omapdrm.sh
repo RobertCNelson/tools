@@ -32,6 +32,10 @@ check_dpkg
 pkg="libudev-dev"
 check_dpkg
 
+#git (not installed by default in netinstall)
+pkg="git-core"
+check_dpkg
+
 if [ "${deb_pkgs}" ] ; then
 	echo ""
 	echo "Installing: ${deb_pkgs}"
