@@ -26,9 +26,9 @@ unset DIR
 
 DIR=$PWD
 
-SDK="4.09.00.01"
-sdk_version="4_09_00_01"
-SDK_DIR="4_09_00_01"
+SDK="4.10.00.01"
+sdk_version="4_10_00_01"
+SDK_DIR="4_10_00_01"
 SGX_SHA="origin/${SDK}"
 
 http_ti="http://software-dl.ti.com/dsps/dsps_public_sw/sdo_sb/targetcontent/gfxsdk/"
@@ -42,18 +42,8 @@ dl_sdk () {
 	fi
 }
 
-dl_sdk_hardfp () {
-	echo "md5sum mis-match: ${md5sum} (re-downloading)"
-	wget -c --directory-prefix=${DIR}/dl/ ${http_ti}${sdk_version}/exports/Graphics_SDK_setuplinux_${sdk_version}_hardfp_BinOnly.bin
-	if [ ! -f ${DIR}/dl/Graphics_SDK_setuplinux_${sdk_version}_hardfp_BinOnly.bin ] ; then
-		echo "network failure"
-		exit
-	fi
-}
-
 dl_n_verify_sdk () {
-	sgx_md5sum="7eb02ffbfc7b4843259ac919bd964b57"
-	sgx_hfp_md5sum="e44ecc1573c85e14524477d011742714"
+	sgx_md5sum="20b449eacbecb4bafec2d38d805b9c74"
 
 	if [ -f "${DIR}/dl/Graphics_SDK_setuplinux_${sdk_version}.bin" ] ; then
 		echo "Verifying: Graphics_SDK_setuplinux_${sdk_version}.bin"
@@ -67,20 +57,6 @@ dl_n_verify_sdk () {
 		fi
 	else
 		dl_sdk
-	fi
-
-	if [ -f "${DIR}/dl/Graphics_SDK_setuplinux_${sdk_version}_hardfp_BinOnly.bin" ] ; then
-		echo "Verifying: Graphics_SDK_setuplinux_${sdk_version}_hardfp_BinOnly.bin"
-		md5sum=$(md5sum "${DIR}/dl/Graphics_SDK_setuplinux_${sdk_version}_hardfp_BinOnly.bin" | awk '{print $1}')
-		if [ "x${sgx_hfp_md5sum}" != "x${md5sum}" ] ; then
-			echo "Debug: md5sum mismatch got: ${md5sum}"
-			rm -f "${DIR}/dl/Graphics_SDK_setuplinux_${sdk_version}_hardfp_BinOnly.bin" || true
-			dl_sdk_hardfp
-		else
-			echo "md5sum match: ${md5sum}"
-		fi
-	else
-		dl_sdk_hardfp
 	fi
 }
 
@@ -99,22 +75,6 @@ install_sgx () {
 		touch "${DIR}"/ignore/SDK_BIN/Graphics_SDK_setuplinux_${sdk_version}/verify.${sgx_md5sum}
 	else
 		echo "Graphics_SDK_setuplinux_${sdk_version} is installed"
-	fi
-
-	if [ ! -f "${DIR}/ignore/SDK_BIN/Graphics_SDK_setuplinux_${sdk_version}_hardfp_BinOnly/verify.${sgx_hfp_md5sum}" ] ; then
-		echo "Installing: Graphics_SDK_setuplinux_${sdk_version}_hardfp_BinOnly"
-		if [ -d "${DIR}/ignore/SDK_BIN/Graphics_SDK_setuplinux_${sdk_version}_hardfp_BinOnly.bin" ] ; then
-			rm -rf "${DIR}/ignore/SDK_BIN/Graphics_SDK_setuplinux_${sdk_version}_hardfp_BinOnly.bin" || true
-		fi
-		chmod +x "${DIR}"/dl/Graphics_SDK_setuplinux_${sdk_version}_hardfp_BinOnly.bin
-		"${DIR}"/dl/Graphics_SDK_setuplinux_${sdk_version}_hardfp_BinOnly.bin --mode console --prefix "${DIR}"/ignore/SDK_BIN/Graphics_SDK_setuplinux_${sdk_version}_hardfp_BinOnly <<-__EOF__
-		Y
-		qy
-	
-		__EOF__
-		touch "${DIR}"/ignore/SDK_BIN/Graphics_SDK_setuplinux_${sdk_version}_hardfp_BinOnly/verify.${sgx_hfp_md5sum}
-	else
-		echo "Graphics_SDK_setuplinux_${sdk_version}_hardfp_BinOnly is installed"
 	fi
 }
 
@@ -154,24 +114,13 @@ git_sgx_modules () {
 	fi
 }
 
-copy_sgx_es_armel () {
-	echo "Copying: armel: ${es_version} to build dir"
-	mkdir -p "${DIR}/ignore/ti-sdk-pvr/Graphics_SDK/armel/gfx_rel_${es_version}" || true
-	cp -r "${DIR}"/ignore/SDK_BIN/Graphics_SDK_setuplinux_${sdk_version}/gfx_rel_${es_version}/* "${DIR}/ignore/ti-sdk-pvr/Graphics_SDK/armel/gfx_rel_${es_version}/"
-}
-
-copy_sgx_es_armhf () {
-	echo "Copying: armhf: ${es_version} to build dir"
+copy_sgx_es () {
+	echo "Copying: ${es_version} to build dir"
 	mkdir -p "${DIR}/ignore/ti-sdk-pvr/Graphics_SDK/armhf/gfx_rel_${es_version}" || true
-	cp -r "${DIR}"/ignore/SDK_BIN/Graphics_SDK_setuplinux_${sdk_version}_hardfp_BinOnly/gfx_rel_${es_version}/* "${DIR}/ignore/ti-sdk-pvr/Graphics_SDK/armhf/gfx_rel_${es_version}/"
+	cp -r "${DIR}"/ignore/SDK_BIN/Graphics_SDK_setuplinux_${sdk_version}/gfx_rel_${es_version}/* "${DIR}/ignore/ti-sdk-pvr/Graphics_SDK/armhf/gfx_rel_${es_version}/"
 }
 
 copy_sgx_binaries () {
-	if [ -d "${DIR}/ignore/ti-sdk-pvr/Graphics_SDK/armel" ] ; then
-		rm -rf "${DIR}/ignore/ti-sdk-pvr/Graphics_SDK/armel" || true
-		mkdir -p "${DIR}/ignore/ti-sdk-pvr/Graphics_SDK/armel" || true
-	fi
-
 	if [ -d "${DIR}/ignore/ti-sdk-pvr/Graphics_SDK/armhf" ] ; then
 		rm -rf "${DIR}/ignore/ti-sdk-pvr/Graphics_SDK/armhf" || true
 		mkdir -p "${DIR}/ignore/ti-sdk-pvr/Graphics_SDK/armhf" || true
@@ -191,20 +140,16 @@ copy_sgx_binaries () {
 	cp -r "${DIR}"/ignore/SDK_BIN/Graphics_SDK_setuplinux_${sdk_version}/tools "${DIR}/ignore/ti-sdk-pvr/Graphics_SDK/"
 
 	es_version="es3.x"
-	copy_sgx_es_armel
-	copy_sgx_es_armhf
+	copy_sgx_es
 
 	es_version="es5.x"
-	copy_sgx_es_armel
-	copy_sgx_es_armhf
+	copy_sgx_es
 
 	es_version="es6.x"
-	copy_sgx_es_armel
-	copy_sgx_es_armhf
+	copy_sgx_es
 
 	es_version="es8.x"
-	copy_sgx_es_armel
-	copy_sgx_es_armhf
+	copy_sgx_es
 }
 
 clean_sgx_modules () {
@@ -511,13 +456,6 @@ pkg_modules () {
 	fi
 	mkdir "${DIR}/ignore/ti-sdk-pvr/pkg"
 
-	ARCH="armel"
-	CORE="es3"
-	gfx_rel_x
-
-	CORE="es5"
-	gfx_rel_x
-
 	ARCH="armhf"
 	CORE="es3"
 	gfx_rel_x
@@ -538,10 +476,8 @@ pkg_helpers () {
 	rm -f /tmp/index.html || true
 	wget --no-verbose --directory-prefix=/tmp http://ports.ubuntu.com/pool/universe/d/devmem2/
 
-	DEVMEM_ARMEL=$(cat /tmp/index.html | grep _armel.deb | head -1 | awk -F"\"" '{print $8}')
 	DEVMEM_ARMHF=$(cat /tmp/index.html | grep _armhf.deb | head -1 | awk -F"\"" '{print $8}')
 
-	wget -c --no-verbose http://ports.ubuntu.com/pool/universe/d/devmem2/${DEVMEM_ARMEL}
 	wget -c --no-verbose http://ports.ubuntu.com/pool/universe/d/devmem2/${DEVMEM_ARMHF}
 }
 

@@ -236,7 +236,7 @@ build_sgx_modules () {
 	cd ${DIR}/
 	echo "-----------------------------"
 	echo "modinfo sanity check: vermagic:"
-	sudo modinfo "${DIR}/ignore/ti-sdk-pvr/Graphics_SDK/gfx_rel_es$2/"pvr* | grep vermagic || true
+	/sbin/modinfo "${DIR}/ignore/ti-sdk-pvr/Graphics_SDK/gfx_rel_es$2/"pvr* | grep vermagic || true
 	echo "-----------------------------"
 }
 
@@ -358,10 +358,10 @@ file_install_sgx () {
 	ln -sf /usr/lib/libXdmcp.so.6.0.0 /usr/lib/libXdmcp.so.0
 	ln -sf /usr/lib/libXau.so.6.0.0 /usr/lib/libXau.so.0
 
-	sudo rm -rf /opt/sgx_ews/ || true || true
-	sudo rm -rf /opt/sgx_modules/ || true || true
-	sudo rm -rf /opt/sgx_other/ || true || true
-	sudo rm -rf /opt/sgx_xorg/ || true || true
+	sudo rm -rf /opt/sgx_ews/ || true
+	sudo rm -rf /opt/sgx_modules/ || true
+	sudo rm -rf /opt/sgx_other/ || true
+	sudo rm -rf /opt/sgx_xorg/ || true
 
 	if [ -f ./gfx_rel_es3_\${DPKG_ARCH}.tar.gz ] ; then
 	        echo "Extracting gfx_rel_es3_\${DPKG_ARCH}.tar.gz"
