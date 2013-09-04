@@ -47,12 +47,14 @@ check_running_system () {
 }
 
 check_dpkg () {
-	LC_ALL=C dpkg --list | awk '{print $2}' | grep "^${pkg}" >/dev/null || deb_pkgs="${deb_pkgs}${pkg} "
+	LC_ALL=C dpkg --list | awk '{print $2}' | grep "^${pkg}$" >/dev/null || deb_pkgs="${deb_pkgs}${pkg} "
 }
 
 check_host_pkgs () {
 	unset deb_pkgs
 	pkg="dosfstools"
+	check_dpkg
+	pkg="initramfs-tools"
 	check_dpkg
 	pkg="rsync"
 	check_dpkg
