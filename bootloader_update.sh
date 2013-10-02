@@ -5,9 +5,6 @@ if ! id | grep -q root; then
 	exit
 fi
 
-MIRROR="http://rcn-ee.net/deb"
-BACKUP_MIRROR="http://rcn-ee.homeip.net:81/dl/mirrors/deb"
-
 DRIVE="/boot/uboot"
 
 TEMPDIR=$(mktemp -d)
@@ -16,6 +13,7 @@ dl_bootloader () {
 	echo ""
 	echo "Downloading Device's Bootloader"
 	echo "-----------------------------"
+	conf_bl_http="http://rcn-ee.net/deb/tools/latest"
 	conf_bl_listfile="bootloader-ng"
 	minimal_boot="1"
 
