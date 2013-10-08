@@ -247,7 +247,9 @@ copy_rootfs () {
 }
 
 check_running_system
-check_host_pkgs
+if [ ! -f /boot/uboot/flash-eMMC.txt ] ; then
+	check_host_pkgs
+fi
 update_boot_files
 partition_drive
 copy_boot
