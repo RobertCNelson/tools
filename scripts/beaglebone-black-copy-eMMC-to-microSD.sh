@@ -114,11 +114,7 @@ format_root () {
 	flush_cache
 }
 
-partition_drive () {
-	flush_cache
-	umount ${destination}p1 || true
-	umount ${destination}p2 || true
-
+repartition_drive () {
 	dd if=/dev/zero of=${destination} bs=1M count=16
 	flush_cache
 
@@ -127,7 +123,32 @@ partition_drive () {
 		1,64,0xe,*
 		,,,-
 	__EOF__
+}
+
+partition_drive () {
 	flush_cache
+	umount ${destination}p1 || true
+	umount ${destination}p2 || true
+
+	#eMMC, try to save it by not "always" eraseing everything over and over...
+	mkdir -p /tmp/boot/ || true
+	if mount ${destination}p1 /tmp/boot/ ; then
+		#/tmp/boot/SOC.sh (my image)
+		#/tmp/boot/LICENSE.txt (probally Angstrom, but mine too..)
+		if [ -f /tmp/boot/SOC.sh ] || [ -f /tmp/boot/LICENSE.txt ] ; then
+			flush_cache
+			umount ${destination}p1 || true
+		else
+			flush_cache
+			umount ${destination}p1 || true
+			repartition_drive
+			flush_cache
+		fi
+	else
+		flush_cache
+		repartition_drive
+		flush_cache
+	fi
 
 	format_boot
 	format_root
