@@ -114,6 +114,17 @@ format_root () {
 	flush_cache
 }
 
+repartition_drive () {
+	dd if=/dev/zero of=${destination} bs=1M count=16
+	flush_cache
+
+	#64Mb fat formatted boot partition
+	LC_ALL=C sfdisk --force --in-order --Linux --unit M "${destination}" <<-__EOF__
+		1,64,0xe,*
+		,,,-
+	__EOF__
+}
+
 partition_drive () {
 	flush_cache
 	umount ${destination}p1 || true
@@ -121,24 +132,21 @@ partition_drive () {
 
 	#eMMC, try to save it by not "always" eraseing everything over and over...
 	mkdir -p /tmp/boot/ || true
-	mount ${destination}p1 /tmp/boot/
-
-	#/tmp/boot/SOC.sh (my image)
-	#/tmp/boot/LICENSE.txt (probally Angstrom, but mine too..)
-	if [ -f /tmp/boot/SOC.sh ] || [ -f /tmp/boot/LICENSE.txt ] ; then
-		flush_cache
-		umount ${destination}p1 || true
+	if mount ${destination}p1 /tmp/boot/ ; then
+		#/tmp/boot/SOC.sh (my image)
+		#/tmp/boot/LICENSE.txt (probally Angstrom, but mine too..)
+		if [ -f /tmp/boot/SOC.sh ] || [ -f /tmp/boot/LICENSE.txt ] ; then
+			flush_cache
+			umount ${destination}p1 || true
+		else
+			flush_cache
+			umount ${destination}p1 || true
+			repartition_drive
+			flush_cache
+		fi
 	else
 		flush_cache
-		umount ${destination}p1 || true
-		dd if=/dev/zero of=${destination} bs=1M count=16
-		flush_cache
-
-		#64Mb fat formatted boot partition
-		LC_ALL=C sfdisk --force --in-order --Linux --unit M "${destination}" <<-__EOF__
-			1,64,0xe,*
-			,,,-
-		__EOF__
+		repartition_drive
 		flush_cache
 	fi
 
