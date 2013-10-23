@@ -13,8 +13,6 @@ pkg="flex"
 check_dpkg
 pkg="git-core"
 check_dpkg
-pkg="iputils-ping"
-check_dpkg
 
 if [ "${deb_pkgs}" ] ; then
 	echo "Installing: ${deb_pkgs}"
