@@ -120,7 +120,7 @@ repartition_drive () {
 
 	#64Mb fat formatted boot partition
 	LC_ALL=C sfdisk --force --in-order --Linux --unit M "${destination}" <<-__EOF__
-		1,64,0xe,*
+		1,96,0xe,*
 		,,,-
 	__EOF__
 }
@@ -135,15 +135,15 @@ partition_drive () {
 	if mount ${destination}p1 /tmp/boot/ ; then
 		#/tmp/boot/SOC.sh (my image)
 		#/tmp/boot/LICENSE.txt (probally Angstrom, but mine too..)
-		if [ -f /tmp/boot/SOC.sh ] || [ -f /tmp/boot/LICENSE.txt ] ; then
-			flush_cache
-			umount ${destination}p1 || true
-		else
+		#if [ -f /tmp/boot/SOC.sh ] || [ -f /tmp/boot/LICENSE.txt ] ; then
+		#	flush_cache
+		#	umount ${destination}p1 || true
+		#else
 			flush_cache
 			umount ${destination}p1 || true
 			repartition_drive
 			flush_cache
-		fi
+		#fi
 	else
 		flush_cache
 		repartition_drive
