@@ -25,8 +25,22 @@ if ! id | grep -q root; then
 	exit
 fi
 
-source="/dev/mmcblk1"
-destination="/dev/mmcblk0"
+boot_disk=$(LC_ALL=C lsblk -l | grep "/boot/uboot" | awk '{print $1}')
+
+if [ "x${boot_drive}" = "x" ] ; then
+	echo "Error: script halting, system unrecognized..."
+	exit 1
+fi
+
+if [ "x${boot_drive}" = "xmmcblk0p1" ] ; then
+	source="/dev/mmcblk0"
+	destination="/dev/mmcblk1"
+fi
+
+if [ "x${boot_drive}" = "xmmcblk1p1" ] ; then
+	source="/dev/mmcblk1"
+	destination="/dev/mmcblk0"
+fi
 
 network_down () {
 	echo "Network Down"
