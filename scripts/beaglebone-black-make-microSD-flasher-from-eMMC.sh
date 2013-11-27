@@ -25,7 +25,8 @@ if ! id | grep -q root; then
 	exit
 fi
 
-boot_disk=$(LC_ALL=C lsblk -l | grep "/boot/uboot" | awk '{print $1}')
+unset boot_drive
+boot_drive=$(LC_ALL=C lsblk -l | grep "/boot/uboot" | awk '{print $1}')
 
 if [ "x${boot_drive}" = "x" ] ; then
 	echo "Error: script halting, system unrecognized..."
