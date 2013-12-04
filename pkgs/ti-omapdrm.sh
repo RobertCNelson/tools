@@ -45,7 +45,7 @@ if [ "${deb_pkgs}" ] ; then
 	echo "--------------------"
 fi
 
-git_sha="libdrm-2.4.46"
+git_sha="libdrm-2.4.50"
 project="libdrm"
 server="git://anongit.freedesktop.org/mesa/drm"
 
