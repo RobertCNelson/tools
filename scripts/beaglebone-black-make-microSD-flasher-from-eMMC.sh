@@ -261,6 +261,7 @@ copy_rootfs () {
 	echo "#" >> /tmp/rootfs/etc/fstab
 	echo "${root_uuid}  /  ${root_filesystem}  noatime,errors=remount-ro  0  1" >> /tmp/rootfs/etc/fstab
 	echo "${boot_uuid}  /boot/uboot  auto  defaults  0  0" >> /tmp/rootfs/etc/fstab
+	echo "debugfs         /sys/kernel/debug  debugfs  defaults          0  0" >> /tmp/rootfs/etc/fstab
 	flush_cache
 	umount ${destination}p2 || true
 
