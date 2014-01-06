@@ -26,8 +26,6 @@ pkg="libgnome-keyring-dev"
 check_dpkg
 pkg="libpci-dev"
 check_dpkg
-pkg="libpulse-dev"
-check_dpkg
 pkg="libudev-dev"
 check_dpkg
 pkg="pkg-config"
@@ -35,11 +33,9 @@ check_dpkg
 
 deb_distro=$(lsb_release -cs | sed 's/\//_/g')
 case "${deb_distro}" in
-jessie|sid)
-	pkg="ninja-build"
+wheezy)
+	pkg="libpulse-dev"
 	check_dpkg
-	;;
-*)
 	if [ ! -f /usr/local/bin/ninja ] ; then
 		git clone git://github.com/martine/ninja.git /tmp/
 		cd /tmp/ninja
@@ -47,6 +43,12 @@ jessie|sid)
 		./bootstrap.py
 		sudo cp -v ./ninja /usr/local/bin/
 	fi
+	;;
+jessie|sid)
+	pkg="libpulse-dev:${deb_arch}"
+	check_dpkg
+	pkg="ninja-build"
+	check_dpkg
 	;;
 esac
 
