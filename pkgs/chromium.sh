@@ -62,6 +62,32 @@ if [ "${deb_pkgs}" ] ; then
 	sudo apt-get clean
 fi
 
+# Disable SSE2
+GYP_DEFINES=disable_sse2=1
+
+GYP_DEFINES="${GYP_DEFINES} proprietary_codecs=1"
+
+# disable native client (nacl)
+GYP_DEFINES="${GYP_DEFINES} disable_nacl=1"
+
+# do not use embedded third_party/gold as the linker.
+GYP_DEFINES="${GYP_DEFINES} linux_use_gold_binary=0 linux_use_gold_flags=0"
+
+# disable tcmalloc
+GYP_DEFINES="${GYP_DEFINES} linux_use_tcmalloc=0"
+
+# Use explicit library dependencies instead of dlopen.
+# This makes breakages easier to detect by revdep-rebuild.
+GYP_DEFINES="${GYP_DEFINES} linux_link_gsettings=1"
+
+GYP_DEFINES="${GYP_DEFINES} sysroot=/"
+GYP_DEFINES="${GYP_DEFINES} disable_nacl=1 linux_use_tcmalloc=0 enable_webrtc=0 use_cups=1"
+
+if [ "x${deb_arch}" = "xarmhf" ] ; then
+	GYP_DEFINES="${GYP_DEFINES} -DUSE_EABI_HARDFLOAT"
+	GYP_DEFINES="${GYP_DEFINES} target_arch=arm  v8_use_arm_eabi_hardfloat=true arm_fpu=vfpv3 arm_float_abi=hard arm_thumb=1 armv7=1 arm_neon=0"
+fi
+
 if [ ! -d /opt/chrome-src/ ] ; then
 	sudo mkdir /opt/chrome-src/
 	sudo chown -R $USER:$USER /opt/chrome-src
@@ -75,5 +101,8 @@ fi
 tar xf chromium-${chrome_version}.tar.xz
 mv /opt/chrome-src/chromium-${chrome_version} /opt/chrome-src/src/
 cd /opt/chrome-src/src/
+echo "Building with: [${GYP_DEFINES}]"
+export GYP_DEFINES="${GYP_DEFINES}"
+./build/gyp_chromium
 
 #
