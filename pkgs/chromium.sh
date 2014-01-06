@@ -104,5 +104,6 @@ cd /opt/chrome-src/src/
 echo "Building with: [${GYP_DEFINES}]"
 export GYP_DEFINES="${GYP_DEFINES}"
 ./build/gyp_chromium
+ninja -C out/Release chrome
 
 #
