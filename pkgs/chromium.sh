@@ -81,7 +81,7 @@ GYP_DEFINES="${GYP_DEFINES} linux_use_tcmalloc=0"
 GYP_DEFINES="${GYP_DEFINES} linux_link_gsettings=1"
 
 GYP_DEFINES="${GYP_DEFINES} sysroot=/"
-GYP_DEFINES="${GYP_DEFINES} disable_nacl=1 linux_use_tcmalloc=0 enable_webrtc=0 use_cups=1"
+GYP_DEFINES="${GYP_DEFINES} disable_nacl=1 enable_webrtc=0 use_cups=1"
 
 if [ "x${deb_arch}" = "xarmhf" ] ; then
 	GYP_DEFINES="${GYP_DEFINES} -DUSE_EABI_HARDFLOAT"
