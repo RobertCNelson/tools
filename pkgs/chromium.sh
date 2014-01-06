@@ -1,5 +1,7 @@
 #!/bin/sh -e
 
+chrome_version="31.0.1650.69"
+
 check_dpkg () {
 	LC_ALL=C dpkg --list | awk '{print $2}' | grep "^${pkg}$" >/dev/null || deb_pkgs="${deb_pkgs}${pkg} "
 }
@@ -59,3 +61,19 @@ if [ "${deb_pkgs}" ] ; then
 	sudo apt-get -y install ${deb_pkgs}
 	sudo apt-get clean
 fi
+
+if [ ! -d /opt/chrome-src/ ] ; then
+	sudo mkdir /opt/chrome-src/
+	sudo chown -R $USER:$USER /opt/chrome-src
+fi
+
+cd /opt/chrome-src/
+wget -c http://gsdview.appspot.com/chromium-browser-official/chromium-${chrome_version}.tar.xz
+if [ -d /opt/chrome-src/src/ ] ; then
+	rm -rf /opt/chrome-src/src/ || true
+fi
+tar xf chromium-${chrome_version}.tar.xz
+mv /opt/chrome-src/chromium-${chrome_version} /opt/chrome-src/src/
+cd /opt/chrome-src/src/
+
+#
