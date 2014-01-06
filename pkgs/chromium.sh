@@ -32,6 +32,7 @@ pkg="pkg-config"
 check_dpkg
 
 deb_distro=$(lsb_release -cs | sed 's/\//_/g')
+deb_arch=$(LC_ALL=C dpkg --print-architecture)
 case "${deb_distro}" in
 wheezy)
 	pkg="libpulse-dev"
