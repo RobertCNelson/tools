@@ -33,18 +33,19 @@ check_dpkg
 pkg="pkg-config"
 check_dpkg
 
-deb_distro=$(lsb_release -cs | sed 's/\//_/g')
 deb_arch=$(LC_ALL=C dpkg --print-architecture)
+pkg="libasound2-dev"
+check_dpkg
+pkg="libpulse-dev"
+check_dpkg
+pkg="libxss-dev"
+check_dpkg
+pkg="libxtst-dev"
+check_dpkg
+
+deb_distro=$(lsb_release -cs | sed 's/\//_/g')
 case "${deb_distro}" in
 wheezy)
-	pkg="libasound2-dev"
-	check_dpkg
-	pkg="libpulse-dev"
-	check_dpkg
-	pkg="libxss-dev"
-	check_dpkg
-	pkg="libxtst-dev"
-	check_dpkg
 	if [ ! -f /usr/local/bin/ninja ] ; then
 		mkdir -p /tmp/ninja
 		git clone git://github.com/martine/ninja.git /tmp/ninja
@@ -55,14 +56,6 @@ wheezy)
 	fi
 	;;
 jessie|sid)
-	pkg="libasound2-dev:${deb_arch}"
-	check_dpkg
-	pkg="libpulse-dev:${deb_arch}"
-	check_dpkg
-	pkg="libxss-dev:${deb_arch}"
-	check_dpkg
-	pkg="libxtst-dev:${deb_arch}"
-	check_dpkg
 	pkg="ninja-build"
 	check_dpkg
 	;;
