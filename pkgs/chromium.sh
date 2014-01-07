@@ -14,6 +14,8 @@ pkg="build-essential"
 check_dpkg
 pkg="gperf"
 check_dpkg
+pkg="libasound2-dev"
+check_dpkg
 pkg="libcups2-dev"
 check_dpkg
 pkg="libgtk2.0-dev"
