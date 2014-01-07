@@ -44,7 +44,8 @@ wheezy)
 	pkg="libxtst-dev"
 	check_dpkg
 	if [ ! -f /usr/local/bin/ninja ] ; then
-		git clone git://github.com/martine/ninja.git /tmp/
+		mkdir -p /tmp/ninja
+		git clone git://github.com/martine/ninja.git /tmp/ninja
 		cd /tmp/ninja
 		git checkout release
 		./bootstrap.py
