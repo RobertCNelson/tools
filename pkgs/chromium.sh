@@ -149,9 +149,6 @@ set_testing_defines () {
 	GYP_DEFINES="${GYP_DEFINES} ffmpeg_branding=Chrome"
 	#endif
 
-	#USE_SYSTEM_SQLITE := $(shell pkg-config 'sqlite3 >= 3.6.1' && echo 1 || echo 0)
-	#USE_SYSTEM_SQLITE := 0
-
 	#$USE_SYSTEM_LIBWEBP := $(shell pkg-config 'libwebp >= 0.3.0' && echo 1 || echo 0)
 	#USE_SYSTEM_LIBWEBP := 0
 
@@ -159,7 +156,8 @@ set_testing_defines () {
 	GYP_DEFINES="${GYP_DEFINES} use_system_bzip2=1"
 	GYP_DEFINES="${GYP_DEFINES} use_system_libjpeg=1"
 	GYP_DEFINES="${GYP_DEFINES} use_system_libpng=1"
-	#GYP_DEFINES="${GYP_DEFINES} use_system_sqlite=$(USE_SYSTEM_SQLITE)"
+	#sqlite3 >= 3.6.1
+	GYP_DEFINES="${GYP_DEFINES} use_system_sqlite=1"
 	GYP_DEFINES="${GYP_DEFINES} use_system_libxml=1"
 	GYP_DEFINES="${GYP_DEFINES} use_system_libxslt=1"
 	GYP_DEFINES="${GYP_DEFINES} use_system_zlib=1"
@@ -242,9 +240,6 @@ set_stable_defines () {
 	GYP_DEFINES="${GYP_DEFINES} ffmpeg_branding=Chrome"
 	#endif
 
-	#USE_SYSTEM_SQLITE := $(shell pkg-config 'sqlite3 >= 3.6.1' && echo 1 || echo 0)
-	#USE_SYSTEM_SQLITE := 0
-
 	#$USE_SYSTEM_LIBWEBP := $(shell pkg-config 'libwebp >= 0.3.0' && echo 1 || echo 0)
 	#USE_SYSTEM_LIBWEBP := 0
 
@@ -252,7 +247,8 @@ set_stable_defines () {
 	GYP_DEFINES="${GYP_DEFINES} use_system_bzip2=1"
 	GYP_DEFINES="${GYP_DEFINES} use_system_libjpeg=1"
 	GYP_DEFINES="${GYP_DEFINES} use_system_libpng=1"
-	#GYP_DEFINES="${GYP_DEFINES} use_system_sqlite=$(USE_SYSTEM_SQLITE)"
+	#sqlite3 >= 3.6.1
+	GYP_DEFINES="${GYP_DEFINES} use_system_sqlite=1"
 	GYP_DEFINES="${GYP_DEFINES} use_system_libxml=1"
 	GYP_DEFINES="${GYP_DEFINES} use_system_libxslt=1"
 	GYP_DEFINES="${GYP_DEFINES} use_system_zlib=1"
