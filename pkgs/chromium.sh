@@ -52,14 +52,14 @@ check_dependcies () {
 	check_dpkg
 	pkg="libxss-dev:${deb_arch}"
 	check_dpkg
-	pkg="libxslt1-dev:${deb_arch}"
-	check_dpkg
 	pkg="libxtst-dev:${deb_arch}"
 	check_dpkg
 
 	deb_distro=$(lsb_release -cs | sed 's/\//_/g')
 	case "${deb_distro}" in
 	wheezy)
+		pkg="libxslt1-dev"
+		check_dpkg
 		if [ ! -f /usr/local/bin/ninja ] ; then
 			mkdir -p /tmp/ninja
 			git clone git://github.com/martine/ninja.git /tmp/ninja
@@ -70,6 +70,8 @@ check_dependcies () {
 		fi
 		;;
 	jessie|sid)
+		pkg="libxslt1-dev:${deb_arch}"
+		check_dpkg
 		pkg="ninja-build"
 		check_dpkg
 		;;
