@@ -30,6 +30,8 @@ pkg="libpci-dev"
 check_dpkg
 pkg="libudev-dev"
 check_dpkg
+pkg="libxtst-dev"
+check_dpkg
 pkg="pkg-config"
 check_dpkg
 
