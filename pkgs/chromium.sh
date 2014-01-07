@@ -44,6 +44,8 @@ check_dependcies () {
 	check_dpkg
 	pkg="libpulse-dev:${deb_arch}"
 	check_dpkg
+	pkg="libxml2-dev:${deb_arch}"
+	check_dpkg
 	pkg="libxss-dev:${deb_arch}"
 	check_dpkg
 	pkg="libxtst-dev:${deb_arch}"
