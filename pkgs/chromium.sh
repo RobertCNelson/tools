@@ -30,8 +30,6 @@ pkg="libpci-dev"
 check_dpkg
 pkg="libudev-dev"
 check_dpkg
-pkg="libxss-dev"
-check_dpkg
 pkg="pkg-config"
 check_dpkg
 
@@ -42,6 +40,8 @@ wheezy)
 	pkg="libasound2-dev"
 	check_dpkg
 	pkg="libpulse-dev"
+	check_dpkg
+	pkg="libxss-dev"
 	check_dpkg
 	pkg="libxtst-dev"
 	check_dpkg
@@ -58,6 +58,8 @@ jessie|sid)
 	pkg="libasound2-dev:${deb_arch}"
 	check_dpkg
 	pkg="libpulse-dev:${deb_arch}"
+	check_dpkg
+	pkg="libxss-dev:${deb_arch}"
 	check_dpkg
 	pkg="libxtst-dev:${deb_arch}"
 	check_dpkg
