@@ -46,6 +46,8 @@ check_dependcies () {
 	deb_arch=$(LC_ALL=C dpkg --print-architecture)
 	pkg="libasound2-dev:${deb_arch}"
 	check_dpkg
+	pkg="libjpeg8-dev:${deb_arch}"
+	check_dpkg
 	pkg="libpulse-dev:${deb_arch}"
 	check_dpkg
 	pkg="libxml2-dev:${deb_arch}"
