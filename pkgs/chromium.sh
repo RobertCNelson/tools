@@ -130,7 +130,7 @@ set_testing_defines () {
 	GYP_DEFINES="${GYP_DEFINES} library=shared_library"
 
 	# Always ignore compiler warnings
-	GYP_DEFINES="${GYP_DEFINES} werror=$(NULL)"
+	GYP_DEFINES="${GYP_DEFINES} werror="
 
 	# FFmpeg-mt
 	#ifeq (1,$(USE_SYSTEM_FFMPEG))
@@ -223,7 +223,7 @@ set_stable_defines () {
 	GYP_DEFINES="${GYP_DEFINES} library=shared_library"
 
 	# Always ignore compiler warnings
-	GYP_DEFINES="${GYP_DEFINES} werror=$(NULL)"
+	GYP_DEFINES="${GYP_DEFINES} werror="
 
 	# FFmpeg-mt
 	#ifeq (1,$(USE_SYSTEM_FFMPEG))
