@@ -163,7 +163,8 @@ set_testing_defines () {
 	GYP_DEFINES="${GYP_DEFINES} use_system_libjpeg=1"
 	GYP_DEFINES="${GYP_DEFINES} use_system_libpng=1"
 	#sqlite3 >= 3.6.1
-	GYP_DEFINES="${GYP_DEFINES} use_system_sqlite=1"
+	#fails with jessie: 31.0.1650.69
+	#GYP_DEFINES="${GYP_DEFINES} use_system_sqlite=1"
 	GYP_DEFINES="${GYP_DEFINES} use_system_libxml=1"
 	GYP_DEFINES="${GYP_DEFINES} use_system_libxslt=1"
 	GYP_DEFINES="${GYP_DEFINES} use_system_zlib=1"
@@ -254,7 +255,8 @@ set_stable_defines () {
 	GYP_DEFINES="${GYP_DEFINES} use_system_libjpeg=1"
 	GYP_DEFINES="${GYP_DEFINES} use_system_libpng=1"
 	#sqlite3 >= 3.6.1
-	GYP_DEFINES="${GYP_DEFINES} use_system_sqlite=1"
+	#fails with jessie: 31.0.1650.69
+	#GYP_DEFINES="${GYP_DEFINES} use_system_sqlite=1"
 	GYP_DEFINES="${GYP_DEFINES} use_system_libxml=1"
 	GYP_DEFINES="${GYP_DEFINES} use_system_libxslt=1"
 	GYP_DEFINES="${GYP_DEFINES} use_system_zlib=1"
