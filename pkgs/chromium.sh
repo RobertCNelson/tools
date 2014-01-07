@@ -126,8 +126,8 @@ set_testing_defines () {
 	GYP_DEFINES="${GYP_DEFINES} use_cups=1"
 
 	if [ "x${deb_arch}" = "xarmhf" ] ; then
+		GYP_DEFINES="${GYP_DEFINES} sysroot=/"
 		GYP_DEFINES="${GYP_DEFINES} target_arch=arm"
-
 		GYP_DEFINES="${GYP_DEFINES} -DUSE_EABI_HARDFLOAT"
 		GYP_DEFINES="${GYP_DEFINES} v8_use_arm_eabi_hardfloat=true"
 		GYP_DEFINES="${GYP_DEFINES} arm_fpu=vfpv3"
