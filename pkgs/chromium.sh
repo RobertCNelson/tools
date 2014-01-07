@@ -40,8 +40,6 @@ check_dependcies () {
 	check_dpkg
 	pkg="pkg-config"
 	check_dpkg
-	pkg="sqlite3"
-	check_dpkg
 	pkg="yasm"
 	check_dpkg
 
@@ -60,6 +58,8 @@ check_dependcies () {
 	deb_distro=$(lsb_release -cs | sed 's/\//_/g')
 	case "${deb_distro}" in
 	wheezy)
+		pkg="libsqlite3-dev"
+		check_dpkg
 		pkg="libxslt1-dev"
 		check_dpkg
 		if [ ! -f /usr/local/bin/ninja ] ; then
@@ -72,6 +72,8 @@ check_dependcies () {
 		fi
 		;;
 	jessie|sid)
+		pkg="libsqlite3-dev:${deb_arch}"
+		check_dpkg
 		pkg="libxslt1-dev:${deb_arch}"
 		check_dpkg
 		pkg="ninja-build"
