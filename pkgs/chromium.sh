@@ -34,6 +34,8 @@ check_dependcies () {
 	check_dpkg
 	pkg="libpci-dev"
 	check_dpkg
+	pkg="libspeechd-dev"
+	check_dpkg
 	pkg="libudev-dev"
 	check_dpkg
 	pkg="pkg-config"
