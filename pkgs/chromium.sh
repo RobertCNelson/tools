@@ -40,6 +40,8 @@ check_dependcies () {
 	check_dpkg
 	pkg="pkg-config"
 	check_dpkg
+	pkg="sqlite3"
+	check_dpkg
 	pkg="yasm"
 	check_dpkg
 
