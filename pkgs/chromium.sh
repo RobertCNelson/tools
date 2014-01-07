@@ -32,6 +32,8 @@ pkg="libpci-dev"
 check_dpkg
 pkg="libudev-dev"
 check_dpkg
+pkg="libxss-dev"
+check_dpkg
 pkg="pkg-config"
 check_dpkg
 
@@ -92,7 +94,7 @@ GYP_DEFINES="${GYP_DEFINES} disable_nacl=1 enable_webrtc=0 use_cups=1"
 
 if [ "x${deb_arch}" = "xarmhf" ] ; then
 	GYP_DEFINES="${GYP_DEFINES} -DUSE_EABI_HARDFLOAT"
-	GYP_DEFINES="${GYP_DEFINES} target_arch=arm  v8_use_arm_eabi_hardfloat=true arm_fpu=vfpv3 arm_float_abi=hard arm_thumb=1 armv7=1 arm_neon=0"
+	GYP_DEFINES="${GYP_DEFINES} target_arch=arm v8_use_arm_eabi_hardfloat=true arm_fpu=vfpv3 arm_float_abi=hard arm_thumb=1 armv7=1 arm_neon=0"
 fi
 
 if [ ! -d /opt/chrome-src/ ] ; then
