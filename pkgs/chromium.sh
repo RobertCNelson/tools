@@ -34,13 +34,13 @@ pkg="pkg-config"
 check_dpkg
 
 deb_arch=$(LC_ALL=C dpkg --print-architecture)
-pkg="libasound2-dev"
+pkg="libasound2-dev:${deb_arch}"
 check_dpkg
-pkg="libpulse-dev"
+pkg="libpulse-dev:${deb_arch}"
 check_dpkg
-pkg="libxss-dev"
+pkg="libxss-dev:${deb_arch}"
 check_dpkg
-pkg="libxtst-dev"
+pkg="libxtst-dev:${deb_arch}"
 check_dpkg
 
 deb_distro=$(lsb_release -cs | sed 's/\//_/g')
