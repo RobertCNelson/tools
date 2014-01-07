@@ -50,6 +50,8 @@ check_dependcies () {
 	check_dpkg
 	pkg="libxss-dev:${deb_arch}"
 	check_dpkg
+	pkg="libxslt1-dev:${deb_arch}"
+	check_dpkg
 	pkg="libxtst-dev:${deb_arch}"
 	check_dpkg
 
