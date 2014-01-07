@@ -32,8 +32,6 @@ pkg="libpci-dev"
 check_dpkg
 pkg="libudev-dev"
 check_dpkg
-pkg="libxtst-dev"
-check_dpkg
 pkg="pkg-config"
 check_dpkg
 
@@ -42,6 +40,8 @@ deb_arch=$(LC_ALL=C dpkg --print-architecture)
 case "${deb_distro}" in
 wheezy)
 	pkg="libpulse-dev"
+	check_dpkg
+	pkg="libxtst-dev"
 	check_dpkg
 	if [ ! -f /usr/local/bin/ninja ] ; then
 		git clone git://github.com/martine/ninja.git /tmp/
@@ -53,6 +53,8 @@ wheezy)
 	;;
 jessie|sid)
 	pkg="libpulse-dev:${deb_arch}"
+	check_dpkg
+	pkg="libxtst-dev:${deb_arch}"
 	check_dpkg
 	pkg="ninja-build"
 	check_dpkg
