@@ -38,6 +38,8 @@ check_dependcies () {
 	check_dpkg
 	pkg="pkg-config"
 	check_dpkg
+	pkg="yasm"
+	check_dpkg
 
 	deb_arch=$(LC_ALL=C dpkg --print-architecture)
 	pkg="libasound2-dev:${deb_arch}"
