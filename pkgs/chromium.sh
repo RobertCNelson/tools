@@ -8,11 +8,13 @@ if [ -f testing ] ; then
 	use_testing=enable
 fi
 
+abi="1"
+
 check_dpkg () {
 	LC_ALL=C dpkg --list | awk '{print $2}' | grep "^${pkg}$" >/dev/null || deb_pkgs="${deb_pkgs}${pkg} "
 }
 
-check_dependcies () {
+check_dependencies() {
 	unset deb_pkgs
 	pkg="bison"
 	check_dpkg
@@ -296,9 +298,37 @@ build_chrome () {
 	export GYP_DEFINES="${GYP_DEFINES}"
 	./build/gyp_chromium
 	ninja -C out/Release chrome chrome_sandbox
+	#test via:
+	#sudo chown root:root chrome_sandbox && sudo chmod 4755 chrome_sandbox && export CHROME_DEVEL_SANDBOX="$PWD/chrome_sandbox"
+	#./chrome
 }
 
-check_dependcies
+package_chrome () {
+	pkgdir="/opt/chrome-src/chromium-${chrome_version}-${abi}"
+	mkdir -p $pkgdir || true
+	cd /opt/chrome-src/src/
+
+	install -D out/Release/chrome "$pkgdir/usr/lib/chromium/chromium"
+
+	install -Dm4755 -o root -g root out/Release/chrome_sandbox "$pkgdir/usr/lib/chromium/chrome-sandbox"
+
+	cp out/Release/{*.pak,libffmpegsumo.so} "$pkgdir/usr/lib/chromium/"
+
+	cp -a out/Release/locales "$pkgdir/usr/lib/chromium/"
+
+	install -Dm644 out/Release/chrome.1 "$pkgdir/usr/share/man/man1/chromium.1"
+
+	for size in 22 24 48 64 128 256; do
+		install -Dm644 "chrome/app/theme/chromium/product_logo_$size.png" "$pkgdir/usr/share/icons/hicolor/${size}x${size}/apps/chromium.png"
+	done
+
+	for size in 16 32; do
+		install -Dm644 "chrome/app/theme/default_100_percent/chromium/product_logo_$size.png" "$pkgdir/usr/share/icons/hicolor/${size}x${size}/apps/chromium.png"
+	done
+	#install -D "chromium.sh" "$pkgdir/usr/bin/chromium"
+}
+
+check_dependencies
 if [ "x${use_testing}" = "xenable" ] ; then
 	set_testing_defines
 else
@@ -306,4 +336,7 @@ else
 fi
 dl_chrome
 build_chrome
+if [ -f /opt/chrome-src/src/out/Release/chrome ] ; then
+	package_chrome
+fi
 #
