@@ -3,6 +3,9 @@
 #Based off:
 #https://github.com/beagleboard/meta-beagleboard/blob/master/meta-beagleboard-extras/recipes-support/usb-gadget/gadget-init/g-ether-load.sh
 
+#Make sure udhcpd is installed
+type udhcpd >/dev/null 2>&1 ||  apt-get install udhcpd 
+
 SERIAL_NUMBER="0C-1234BBBK5678"
 ISBLACK=""
 PRODUCT="am335x_evm"
