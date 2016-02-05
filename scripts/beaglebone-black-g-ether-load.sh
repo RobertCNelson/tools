@@ -3,8 +3,9 @@
 #Based off:
 #https://github.com/beagleboard/meta-beagleboard/blob/master/meta-beagleboard-extras/recipes-support/usb-gadget/gadget-init/g-ether-load.sh
 
-#Make sure udhcpd is installed
+#Make sure udhcpd and dnsmasq is installed
 type udhcpd >/dev/null 2>&1 ||  apt-get install udhcpd 
+type dnsmasq >/dev/null 2>&1 ||  apt-get install dnsmasq 
 
 SERIAL_NUMBER="0C-1234BBBK5678"
 ISBLACK=""
